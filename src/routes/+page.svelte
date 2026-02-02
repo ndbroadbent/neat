@@ -66,7 +66,7 @@
 	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-4"
 >
 	{#if data.form}
-		<div class="w-full max-w-2xl rounded-xl bg-white/10 p-8 shadow-2xl backdrop-blur-sm">
+		<div class="w-full max-w-2xl rounded-2xl bg-white/10 p-10 shadow-2xl backdrop-blur-sm">
 			<!-- Header -->
 			<div class="mb-6">
 				{#if data.form.context}
@@ -74,24 +74,24 @@
 						{data.form.context}
 					</span>
 				{/if}
-				<h1 class="text-2xl font-bold text-white">{data.form.title}</h1>
+				<h1 class="text-4xl font-bold text-white">{data.form.title}</h1>
 				{#if data.form.summary}
-					<p class="mt-2 text-blue-100">{data.form.summary}</p>
+					<p class="mt-3 text-xl text-blue-100">{data.form.summary}</p>
 				{/if}
 			</div>
 
 			<!-- References -->
 			{#if data.form.references && data.form.references.length > 0}
-				<div class="mb-6 rounded-lg bg-white/10 p-4">
-					<h3 class="mb-2 text-sm font-medium text-blue-200">References</h3>
-					<ul class="space-y-1">
+				<div class="mb-8 rounded-lg bg-white/10 p-5">
+					<h3 class="mb-3 text-base font-medium text-blue-200">References</h3>
+					<ul class="space-y-2">
 						{#each data.form.references as ref, i (i)}
 							<li>
 								<a
 									href={ref.url}
 									target="_blank"
 									rel="noopener noreferrer"
-									class="text-blue-300 hover:text-white hover:underline"
+									class="text-lg text-blue-300 hover:text-white hover:underline"
 								>
 									{ref.label}
 								</a>
@@ -135,9 +135,9 @@
 	{:else}
 		<!-- No pending forms -->
 		<div class="text-center">
-			<div class="text-6xl">🎉</div>
-			<h1 class="mt-4 text-2xl font-bold text-white">All done!</h1>
-			<p class="mt-2 text-blue-200">No pending decisions. Check back later.</p>
+			<div class="text-8xl">🎉</div>
+			<h1 class="mt-6 text-4xl font-bold text-white">All done!</h1>
+			<p class="mt-3 text-xl text-blue-200">No pending decisions. Check back later.</p>
 		</div>
 	{/if}
 </main>

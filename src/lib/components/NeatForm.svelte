@@ -51,17 +51,18 @@
 	.neat-form :global(label) {
 		display: block;
 		font-weight: 500;
-		margin-bottom: 0.5rem;
+		font-size: 1.125rem;
+		margin-bottom: 0.75rem;
 		color: rgb(191 219 254); /* text-blue-200 */
 	}
 	.neat-form :global(input),
 	.neat-form :global(select),
 	.neat-form :global(textarea) {
 		width: 100%;
-		padding: 0.75rem;
+		padding: 1rem;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 0.5rem;
-		font-size: 1rem;
+		font-size: 1.125rem;
 		background: rgba(255, 255, 255, 0.1);
 		color: white;
 	}

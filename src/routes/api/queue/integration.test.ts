@@ -48,6 +48,11 @@ async function cleanupTestForms() {
 	await db.delete(forms).where(eq(forms.title, 'Low Priority'));
 }
 
+async function cleanupAllPendingForms() {
+	// For isolation: clean up any pending forms from other tests
+	await db.delete(forms).where(eq(forms.status, 'pending'));
+}
+
 describe('Queue API Integration Tests', () => {
 	beforeEach(async () => {
 		await cleanupTestForms();
@@ -59,6 +64,9 @@ describe('Queue API Integration Tests', () => {
 
 	describe('GET /api/queue', () => {
 		it('should return null form when queue is empty', async () => {
+			// Extra cleanup to ensure no forms from other test files
+			await cleanupAllPendingForms();
+
 			const event = createMockEvent();
 			const response = await GET(event);
 			const data = await response.json();
@@ -67,6 +75,8 @@ describe('Queue API Integration Tests', () => {
 		});
 
 		it('should return the first pending form', async () => {
+			// Extra cleanup to ensure deterministic test
+			await cleanupAllPendingForms();
 			await createTestForm({ title: 'Queue Test Form' });
 
 			const event = createMockEvent();

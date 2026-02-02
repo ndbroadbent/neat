@@ -7,6 +7,7 @@
 	import { createFormValidator } from '@sjsf/ajv8-validator';
 	import { theme } from './theme';
 	import '@sjsf/basic-theme/css/basic.css';
+	import { onMount } from 'svelte';
 
 	// Threshold for switching from radio buttons to select dropdown
 	const RADIO_MAX_OPTIONS = 4;
@@ -21,6 +22,10 @@
 	let { schema, uiSchema, onSubmit, submitText = 'Submit' }: Props = $props();
 
 	let formRef: HTMLFormElement | undefined = $state();
+	let formContainer: HTMLDivElement | undefined = $state();
+
+	// Track "Other" text inputs for each field
+	let otherInputs: Record<string, string> = $state({});
 
 	// Generate smart uiSchema based on enum option counts
 	// ≤4 options: radio buttons, >4 options: select dropdown
@@ -55,6 +60,21 @@
 
 	const smartUiSchema = generateSmartUiSchema(schema, uiSchema);
 
+	// Find fields that have "Other" as an enum option
+	function getFieldsWithOther(): string[] {
+		const properties = schema.properties as Record<string, Schema> | undefined;
+		if (!properties) return [];
+
+		return Object.entries(properties)
+			.filter(([, propSchema]) => {
+				const enumValues = propSchema.enum as unknown[] | undefined;
+				return enumValues?.some((v) => typeof v === 'string' && v.toLowerCase() === 'other');
+			})
+			.map(([key]) => key);
+	}
+
+	const fieldsWithOther = getFieldsWithOther();
+
 	const form = createForm({
 		theme,
 		schema,
@@ -65,9 +85,115 @@
 		validator: createFormValidator,
 		idBuilder: createFormIdBuilder,
 		onSubmit: (value: Record<string, unknown>) => {
-			// value is the form data (first argument, not event.formData)
-			onSubmit(value ?? {});
+			// Replace "Other" values with custom text if provided
+			const finalValue = { ...value };
+			for (const field of fieldsWithOther) {
+				const fieldValue = finalValue[field];
+				if (
+					typeof fieldValue === 'string' &&
+					fieldValue.toLowerCase() === 'other' &&
+					otherInputs[field]?.trim()
+				) {
+					finalValue[field] = otherInputs[field].trim();
+				}
+			}
+			onSubmit(finalValue);
 		}
+	});
+
+	// Inject "Other" text inputs after form renders (using delayed init + event listeners)
+	onMount(() => {
+		if (!formContainer || fieldsWithOther.length === 0) return;
+
+		const injectOtherInputs = () => {
+			for (const fieldName of fieldsWithOther) {
+				// Find the radio/select for this field (exact name match or array notation)
+				const fieldInputs = formContainer?.querySelectorAll(
+					`input[name="${fieldName}"], input[name^="${fieldName}["], select[name="${fieldName}"], select[name^="${fieldName}["]`
+				);
+				if (!fieldInputs?.length) continue;
+
+				// Find the "Other" option
+				fieldInputs.forEach((input) => {
+					const isOtherSelected =
+						(input instanceof HTMLInputElement &&
+							input.type === 'radio' &&
+							input.value.toLowerCase() === 'other' &&
+							input.checked) ||
+						(input instanceof HTMLSelectElement && input.value.toLowerCase() === 'other');
+
+					// Find the field container
+					const fieldContainer = input.closest('.sjsf-field');
+					if (!fieldContainer) return;
+
+					// Check if we already added an "other" input
+					let otherContainer = fieldContainer.querySelector(
+						'.other-input-container'
+					) as HTMLDivElement;
+
+					if (!otherContainer) {
+						// Create the "Other" input container
+						otherContainer = document.createElement('div');
+						otherContainer.className = 'other-input-container';
+						otherContainer.style.cssText =
+							'margin-top: 0.75rem; display: none; transition: all 0.2s ease;';
+
+						const otherInput = document.createElement('input');
+						otherInput.type = 'text';
+						otherInput.placeholder = 'Please specify...';
+						otherInput.className = 'other-text-input';
+						otherInput.dataset.field = fieldName;
+
+						otherInput.addEventListener('input', (e) => {
+							const target = e.target as HTMLInputElement;
+							otherInputs[fieldName] = target.value;
+						});
+
+						otherContainer.appendChild(otherInput);
+						fieldContainer.appendChild(otherContainer);
+					}
+
+					// Show/hide based on "Other" selection
+					if (isOtherSelected) {
+						otherContainer.style.display = 'block';
+					}
+				});
+			}
+		};
+
+		// Initial injection
+		setTimeout(injectOtherInputs, 100);
+
+		// Listen for changes
+		const handleChange = (e: Event) => {
+			const target = e.target as HTMLInputElement | HTMLSelectElement;
+			if (target.tagName === 'INPUT' || target.tagName === 'SELECT') {
+				setTimeout(injectOtherInputs, 10);
+
+				// Update visibility
+				const fieldContainer = target.closest('.sjsf-field');
+				if (fieldContainer) {
+					const otherContainer = fieldContainer.querySelector(
+						'.other-input-container'
+					) as HTMLDivElement;
+					if (otherContainer) {
+						const isOther = target.value.toLowerCase() === 'other';
+						otherContainer.style.display = isOther ? 'block' : 'none';
+						if (!isOther) {
+							// Clear the "other" input when deselected
+							const fieldName = otherContainer.querySelector('input')?.dataset.field;
+							if (fieldName) otherInputs[fieldName] = '';
+						}
+					}
+				}
+			}
+		};
+
+		formContainer.addEventListener('change', handleChange);
+
+		return () => {
+			formContainer?.removeEventListener('change', handleChange);
+		};
 	});
 
 	function handleSubmitClick() {
@@ -77,7 +203,7 @@
 	}
 </script>
 
-<div class="neat-form">
+<div class="neat-form" bind:this={formContainer}>
 	<BasicForm {form} bind:ref={formRef} />
 	<div class="mt-6">
 		<button
@@ -207,5 +333,27 @@
 		height: 1.5rem;
 		accent-color: white;
 		margin-right: 0.5rem;
+	}
+
+	/* "Other" text input styling */
+	.neat-form :global(.other-input-container) {
+		margin-top: 0.75rem;
+	}
+	.neat-form :global(.other-text-input) {
+		width: 100%;
+		padding: 1rem;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+		border-radius: 0.5rem;
+		font-size: 1.125rem;
+		background: rgba(255, 255, 255, 0.1);
+		color: white;
+	}
+	.neat-form :global(.other-text-input::placeholder) {
+		color: rgba(191, 219, 254, 0.6);
+	}
+	.neat-form :global(.other-text-input:focus) {
+		outline: none;
+		border-color: rgba(255, 255, 255, 0.5);
+		box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 	}
 </style>

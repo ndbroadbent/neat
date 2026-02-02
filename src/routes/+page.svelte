@@ -121,7 +121,7 @@
 				<button
 					onclick={handleSkip}
 					disabled={submitting}
-					class="text-sm text-blue-300 hover:text-white"
+					class="cursor-pointer text-sm text-blue-300 hover:text-white"
 				>
 					Skip for now
 				</button>

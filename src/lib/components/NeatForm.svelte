@@ -17,6 +17,8 @@
 
 	let { schema, uiSchema, onSubmit, submitText = 'Submit' }: Props = $props();
 
+	let formRef: HTMLFormElement | undefined = $state();
+
 	const form = createForm({
 		theme,
 		schema,
@@ -30,13 +32,20 @@
 			onSubmit(e.formData);
 		}
 	});
+
+	function handleSubmitClick() {
+		if (formRef) {
+			formRef.requestSubmit();
+		}
+	}
 </script>
 
 <div class="neat-form">
-	<BasicForm {form} />
+	<BasicForm {form} bind:ref={formRef} />
 	<div class="mt-6">
 		<button
-			type="submit"
+			type="button"
+			onclick={handleSubmitClick}
 			class="neat-submit w-full rounded-lg bg-white px-4 py-3 text-lg font-medium text-blue-900 hover:bg-blue-100 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-900 focus:outline-none"
 		>
 			{submitText}

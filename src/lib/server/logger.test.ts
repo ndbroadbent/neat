@@ -21,10 +21,11 @@ vi.mock('pino', () => {
 		debug: vi.fn()
 	};
 
-	const mockPino = vi.fn(() => mockLogger);
-	mockPino.stdTimeFunctions = {
-		isoTime: () => `,"time":"2026-01-01T00:00:00.000Z"`
-	};
+	const mockPino = Object.assign(vi.fn(() => mockLogger), {
+		stdTimeFunctions: {
+			isoTime: () => `,"time":"2026-01-01T00:00:00.000Z"`
+		}
+	});
 
 	return {
 		default: mockPino,

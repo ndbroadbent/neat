@@ -35,17 +35,26 @@ export const POST: RequestHandler = async ({ params, request }) => {
 	// Format response as comment
 	const commentBody = formatResponseAsComment(form.title, response as Record<string, unknown>);
 
-	// Post comment to Fizzy
+	// Post comment to Fizzy (best effort - don't fail if Fizzy is unavailable)
 	const commentResult = await addComment(form.fizzyCardNumber, commentBody);
 	if (!commentResult.success) {
-		throw error(500, `Failed to post comment: ${commentResult.error?.message}`);
+		// Log the error but don't fail the submission
+		// The form response is still saved to the database
+		console.error(
+			`Failed to post comment to Fizzy card #${form.fizzyCardNumber}:`,
+			JSON.stringify(commentResult.error ?? { message: 'Unknown error' })
+		);
 	}
 
-	// Handle onSubmit action
-	if (form.onSubmit === 'close') {
-		await closeCard(form.fizzyCardNumber);
-	} else if (form.onSubmit === 'move' && form.targetColumn) {
-		await moveCard(form.fizzyCardNumber, form.targetColumn);
+	// Handle onSubmit action (best effort - don't fail if Fizzy is unavailable)
+	try {
+		if (form.onSubmit === 'close') {
+			await closeCard(form.fizzyCardNumber);
+		} else if (form.onSubmit === 'move' && form.targetColumn) {
+			await moveCard(form.fizzyCardNumber, form.targetColumn);
+		}
+	} catch (e) {
+		console.error(`Failed to ${form.onSubmit} Fizzy card #${form.fizzyCardNumber}:`, e);
 	}
 
 	// Update form in database

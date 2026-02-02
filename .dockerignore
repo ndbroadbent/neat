@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.svelte-kit
+build
+dist
+
+# Dev files
+.env
+.env.*
+!.env.example
+data/
+*.db
+
+# IDE
+.idea
+.vscode
+
+# Git
+.git
+.gitignore
+
+# Docs
+README.md
+*.md
+!package.json
+
+# Tests
+*.test.ts
+*.spec.ts

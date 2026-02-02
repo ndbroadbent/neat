@@ -116,14 +116,14 @@ test.describe('Form Input Types', () => {
 		}
 	});
 
-	test('should render enum field as select dropdown', async ({ page, request }) => {
+	test('should render small enum (≤4 options) as radio buttons', async ({ page, request }) => {
 		const uniqueId = testId();
 
 		const createRes = await request.post('/api/forms', {
 			data: {
 				fizzyCardId: uniqueId,
 				fizzyCardNumber: 9003,
-				title: 'Enum Field Test',
+				title: 'Small Enum Field Test',
 				schema: {
 					type: 'object',
 					properties: {
@@ -141,16 +141,61 @@ test.describe('Form Input Types', () => {
 		try {
 			await page.goto('/');
 
-			// The form library renders enums as select dropdowns
-			const select = page.getByLabel('Priority');
+			// Smart widget: ≤4 options renders as radio buttons (no radiogroup role)
+			const lowRadio = page.getByRole('radio', { name: 'low' });
+			const mediumRadio = page.getByRole('radio', { name: 'medium' });
+			const highRadio = page.getByRole('radio', { name: 'high' });
+
+			// Verify all radio buttons are visible
+			await expect(lowRadio).toBeVisible();
+			await expect(mediumRadio).toBeVisible();
+			await expect(highRadio).toBeVisible();
+
+			// Click the medium option
+			await mediumRadio.click();
+
+			// Verify it's checked
+			await expect(mediumRadio).toBeChecked();
+		} finally {
+			await cleanupForm(request, created.id);
+		}
+	});
+
+	test('should render large enum (>4 options) as select dropdown', async ({ page, request }) => {
+		const uniqueId = testId();
+
+		const createRes = await request.post('/api/forms', {
+			data: {
+				fizzyCardId: uniqueId,
+				fizzyCardNumber: 9004,
+				title: 'Large Enum Field Test',
+				schema: {
+					type: 'object',
+					properties: {
+						category: {
+							type: 'string',
+							title: 'Category',
+							enum: ['work', 'personal', 'health', 'finance', 'social', 'other']
+						}
+					}
+				}
+			}
+		});
+		const created = await createRes.json();
+
+		try {
+			await page.goto('/');
+
+			// Smart widget: >4 options renders as select dropdown
+			const select = page.getByLabel('Category');
 			await expect(select).toBeVisible();
 
-			// Select a value from dropdown (by visible label, not internal value)
-			await select.selectOption({ label: 'medium' });
+			// Select a value from dropdown
+			await select.selectOption({ label: 'finance' });
 
-			// Verify the selected option text is visible
+			// Verify the selected option
 			const selectedOption = select.locator('option:checked');
-			await expect(selectedOption).toHaveText('medium');
+			await expect(selectedOption).toHaveText('finance');
 		} finally {
 			await cleanupForm(request, created.id);
 		}

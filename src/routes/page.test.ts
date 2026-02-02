@@ -32,9 +32,15 @@ async function createTestForm(overrides: Partial<NewForm> = {}): Promise<NewForm
 }
 
 async function cleanupTestForms() {
+	// Clean up our test forms
 	await db.delete(forms).where(eq(forms.title, 'Page Test Form'));
 	await db.delete(forms).where(eq(forms.title, 'High Priority Page'));
 	await db.delete(forms).where(eq(forms.title, 'Low Priority Page'));
+}
+
+async function cleanupAllPendingForms() {
+	// For isolation: clean up any pending forms from other tests
+	await db.delete(forms).where(eq(forms.status, 'pending'));
 }
 
 describe('Page Server Load', () => {
@@ -47,6 +53,9 @@ describe('Page Server Load', () => {
 	});
 
 	it('should return null and empty array when no pending forms', async () => {
+		// Extra cleanup to ensure no forms from other test files
+		await cleanupAllPendingForms();
+
 		const result = (await load({} as Parameters<typeof load>[0])) as {
 			form: unknown;
 			forms: unknown[];

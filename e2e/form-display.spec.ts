@@ -148,7 +148,9 @@ test.describe('Form Input Types', () => {
 
 		// Type into it
 		await textarea.fill('This is a long note with multiple lines.\nSecond line here.');
-		await expect(textarea).toHaveValue('This is a long note with multiple lines.\nSecond line here.');
+		await expect(textarea).toHaveValue(
+			'This is a long note with multiple lines.\nSecond line here.'
+		);
 	});
 
 	test('should render checkbox field', async ({ page, request }) => {

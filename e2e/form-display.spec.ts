@@ -116,7 +116,7 @@ test.describe('Form Input Types', () => {
 		}
 	});
 
-	test('should render enum field as textbox with options', async ({ page, request }) => {
+	test('should render enum field as select dropdown', async ({ page, request }) => {
 		const uniqueId = testId();
 
 		const createRes = await request.post('/api/forms', {
@@ -141,13 +141,16 @@ test.describe('Form Input Types', () => {
 		try {
 			await page.goto('/');
 
-			// The form library renders enums as textboxes (with autocomplete)
-			const input = page.getByLabel('Priority');
-			await expect(input).toBeVisible();
+			// The form library renders enums as select dropdowns
+			const select = page.getByLabel('Priority');
+			await expect(select).toBeVisible();
 
-			// Type a value
-			await input.fill('medium');
-			await expect(input).toHaveValue('medium');
+			// Select a value from dropdown (by visible label, not internal value)
+			await select.selectOption({ label: 'medium' });
+
+			// Verify the selected option text is visible
+			const selectedOption = select.locator('option:checked');
+			await expect(selectedOption).toHaveText('medium');
 		} finally {
 			await cleanupForm(request, created.id);
 		}
@@ -299,6 +302,211 @@ test.describe('Form Submission', () => {
 
 			// We should still be on the same form (not reloaded to a different one)
 			await expect(page.getByText('Validation Test')).toBeVisible();
+		} finally {
+			await cleanupForm(request, created.id);
+		}
+	});
+});
+
+test.describe('Backend Schema Validation', () => {
+	test('should reject submission with missing required field via API', async ({ request }) => {
+		const uniqueId = testId();
+
+		// Create form with required field
+		const createRes = await request.post('/api/forms', {
+			data: {
+				fizzyCardId: uniqueId,
+				fizzyCardNumber: 9020,
+				title: 'Required Field Validation Test',
+				schema: {
+					type: 'object',
+					required: ['name', 'email'],
+					properties: {
+						name: { type: 'string', title: 'Name' },
+						email: { type: 'string', title: 'Email' }
+					}
+				}
+			}
+		});
+		const created = await createRes.json();
+
+		try {
+			// Try to submit with missing required field
+			const submitRes = await request.post(`/api/queue/${created.id}/submit`, {
+				data: {
+					response: { name: 'John' } // Missing 'email'
+				}
+			});
+
+			expect(submitRes.status()).toBe(400);
+			const errorData = await submitRes.json();
+			expect(errorData.message).toContain('Validation failed');
+			expect(errorData.message).toContain('email');
+
+			// Verify form is still pending
+			const checkRes = await request.get(`/api/forms/${created.id}`);
+			const checkData = await checkRes.json();
+			expect(checkData.status).toBe('pending');
+		} finally {
+			await cleanupForm(request, created.id);
+		}
+	});
+
+	test('should reject submission with wrong type via API', async ({ request }) => {
+		const uniqueId = testId();
+
+		// Create form with number field
+		const createRes = await request.post('/api/forms', {
+			data: {
+				fizzyCardId: uniqueId,
+				fizzyCardNumber: 9021,
+				title: 'Type Validation Test',
+				schema: {
+					type: 'object',
+					properties: {
+						age: { type: 'number', title: 'Age' },
+						count: { type: 'integer', title: 'Count' }
+					}
+				}
+			}
+		});
+		const created = await createRes.json();
+
+		try {
+			// Try to submit string where number expected
+			const submitRes = await request.post(`/api/queue/${created.id}/submit`, {
+				data: {
+					response: { age: 'twenty-five', count: 'ten' }
+				}
+			});
+
+			expect(submitRes.status()).toBe(400);
+			const errorData = await submitRes.json();
+			expect(errorData.message).toContain('Validation failed');
+		} finally {
+			await cleanupForm(request, created.id);
+		}
+	});
+
+	test('should reject submission with invalid enum value via API', async ({ request }) => {
+		const uniqueId = testId();
+
+		// Create form with enum field
+		const createRes = await request.post('/api/forms', {
+			data: {
+				fizzyCardId: uniqueId,
+				fizzyCardNumber: 9022,
+				title: 'Enum Validation Test',
+				schema: {
+					type: 'object',
+					properties: {
+						priority: {
+							type: 'string',
+							title: 'Priority',
+							enum: ['low', 'medium', 'high']
+						}
+					}
+				}
+			}
+		});
+		const created = await createRes.json();
+
+		try {
+			// Try to submit invalid enum value
+			const submitRes = await request.post(`/api/queue/${created.id}/submit`, {
+				data: {
+					response: { priority: 'urgent' } // Not in enum
+				}
+			});
+
+			expect(submitRes.status()).toBe(400);
+			const errorData = await submitRes.json();
+			expect(errorData.message).toContain('Validation failed');
+		} finally {
+			await cleanupForm(request, created.id);
+		}
+	});
+
+	test('should accept valid submission via API', async ({ request }) => {
+		const uniqueId = testId();
+
+		// Create form with various field types
+		const createRes = await request.post('/api/forms', {
+			data: {
+				fizzyCardId: uniqueId,
+				fizzyCardNumber: 9023,
+				title: 'Valid Submission Test',
+				schema: {
+					type: 'object',
+					required: ['name'],
+					properties: {
+						name: { type: 'string', title: 'Name' },
+						age: { type: 'number', title: 'Age' },
+						priority: {
+							type: 'string',
+							enum: ['low', 'medium', 'high']
+						}
+					}
+				}
+			}
+		});
+		const created = await createRes.json();
+
+		// Submit valid data
+		const submitRes = await request.post(`/api/queue/${created.id}/submit`, {
+			data: {
+				response: {
+					name: 'John Doe',
+					age: 30,
+					priority: 'high'
+				}
+			}
+		});
+
+		expect(submitRes.status()).toBe(200);
+		const submitData = await submitRes.json();
+		expect(submitData.success).toBe(true);
+		expect(submitData.form.status).toBe('completed');
+		expect(submitData.form.response).toEqual({
+			name: 'John Doe',
+			age: 30,
+			priority: 'high'
+		});
+	});
+
+	test('should reject extra properties when additionalProperties is false', async ({
+		request
+	}) => {
+		const uniqueId = testId();
+
+		// Create strict schema
+		const createRes = await request.post('/api/forms', {
+			data: {
+				fizzyCardId: uniqueId,
+				fizzyCardNumber: 9024,
+				title: 'Strict Schema Test',
+				schema: {
+					type: 'object',
+					additionalProperties: false,
+					properties: {
+						name: { type: 'string' }
+					}
+				}
+			}
+		});
+		const created = await createRes.json();
+
+		try {
+			// Try to submit with extra property
+			const submitRes = await request.post(`/api/queue/${created.id}/submit`, {
+				data: {
+					response: { name: 'John', extraField: 'should fail' }
+				}
+			});
+
+			expect(submitRes.status()).toBe(400);
+			const errorData = await submitRes.json();
+			expect(errorData.message).toContain('Validation failed');
 		} finally {
 			await cleanupForm(request, created.id);
 		}

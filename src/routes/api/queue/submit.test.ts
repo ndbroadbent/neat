@@ -137,7 +137,99 @@ describe('Submit API Integration Tests', () => {
 			});
 		});
 
-		it('should throw 500 if Fizzy comment fails', async () => {
+		it('should validate response against JSON Schema', async () => {
+			const form = await createTestForm({
+				schema: {
+					type: 'object',
+					required: ['name'],
+					properties: {
+						name: { type: 'string' },
+						age: { type: 'number' }
+					}
+				}
+			});
+
+			// Missing required field
+			const event = createMockEvent({
+				params: { id: form.id },
+				body: { response: { age: 25 } }
+			});
+
+			await expect(POST(event)).rejects.toMatchObject({
+				status: 400,
+				body: { message: expect.stringContaining('Validation failed') }
+			});
+		});
+
+		it('should reject invalid type in response', async () => {
+			const form = await createTestForm({
+				schema: {
+					type: 'object',
+					properties: {
+						count: { type: 'number' }
+					}
+				}
+			});
+
+			// String where number expected
+			const event = createMockEvent({
+				params: { id: form.id },
+				body: { response: { count: 'not a number' } }
+			});
+
+			await expect(POST(event)).rejects.toMatchObject({
+				status: 400,
+				body: { message: expect.stringContaining('Validation failed') }
+			});
+		});
+
+		it('should reject invalid enum value', async () => {
+			const form = await createTestForm({
+				schema: {
+					type: 'object',
+					properties: {
+						priority: { type: 'string', enum: ['low', 'medium', 'high'] }
+					}
+				}
+			});
+
+			// Invalid enum value
+			const event = createMockEvent({
+				params: { id: form.id },
+				body: { response: { priority: 'urgent' } }
+			});
+
+			await expect(POST(event)).rejects.toMatchObject({
+				status: 400,
+				body: { message: expect.stringContaining('Validation failed') }
+			});
+		});
+
+		it('should accept valid response matching schema', async () => {
+			const form = await createTestForm({
+				schema: {
+					type: 'object',
+					required: ['name'],
+					properties: {
+						name: { type: 'string' },
+						age: { type: 'number' }
+					}
+				}
+			});
+
+			const event = createMockEvent({
+				params: { id: form.id },
+				body: { response: { name: 'John', age: 30 } }
+			});
+
+			const response = await POST(event);
+			const data = await response.json();
+
+			expect(data.success).toBe(true);
+			expect(data.form.response).toEqual({ name: 'John', age: 30 });
+		});
+
+		it('should succeed even if Fizzy comment fails (best effort)', async () => {
 			vi.mocked(addComment).mockResolvedValueOnce({
 				success: false,
 				error: { code: 'api_error', message: 'API error' }
@@ -150,9 +242,13 @@ describe('Submit API Integration Tests', () => {
 				body: { response: { choice: 'test' } }
 			});
 
-			await expect(POST(event)).rejects.toMatchObject({
-				status: 500
-			});
+			// Fizzy failures don't block submission - form is still saved
+			const response = await POST(event);
+			const data = await response.json();
+
+			expect(data.success).toBe(true);
+			expect(data.form.status).toBe('completed');
+			expect(data.form.response).toEqual({ choice: 'test' });
 		});
 	});
 });

@@ -2,7 +2,11 @@ import { json, error } from '@sveltejs/kit';
 import { db, forms } from '$lib/server/db';
 import { eq } from 'drizzle-orm';
 import { addComment, moveCard, closeCard } from '$lib/server/fizzy';
+import Ajv from 'ajv';
 import type { RequestHandler } from './$types';
+
+// Initialize AJV for JSON Schema validation
+const ajv = new Ajv({ allErrors: true, strict: false });
 
 // POST /api/queue/:id/submit - Submit form response
 export const POST: RequestHandler = async ({ params, request }) => {
@@ -15,7 +19,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 
 	const { response } = body;
 
-	// Validate response
+	// Validate response exists
 	if (response === null || response === undefined) {
 		throw error(400, 'Response data is required');
 	}
@@ -30,6 +34,18 @@ export const POST: RequestHandler = async ({ params, request }) => {
 	}
 	if (form.status !== 'pending') {
 		throw error(400, 'Form already processed');
+	}
+
+	// Validate response against JSON Schema
+	const validate = ajv.compile(form.schema as object);
+	const isValid = validate(response);
+	if (!isValid) {
+		const errors = validate.errors || [];
+		const errorMessages = errors.map((err) => {
+			const path = err.instancePath || 'root';
+			return `${path}: ${err.message}`;
+		});
+		throw error(400, `Validation failed: ${errorMessages.join('; ')}`);
 	}
 
 	// Format response as comment
@@ -62,7 +78,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		.update(forms)
 		.set({
 			status: 'completed',
-			response,
+			response: response as Record<string, unknown>,
 			completedAt: new Date(),
 			updatedAt: new Date()
 		})

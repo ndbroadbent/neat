@@ -2,14 +2,35 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+	let error = $state<string | null>(null);
+
+	// Parse error response from API - handles various formats
+	async function parseErrorResponse(res: Response): Promise<string> {
+		try {
+			const data = await res.json();
+			if (data.message) return data.message;
+			if (data.error?.message) return data.error.message;
+			if (typeof data.error === 'string') return data.error;
+			return `Request failed (${res.status})`;
+		} catch {
+			return `Request failed (${res.status})`;
+		}
+	}
 
 	async function toggleSkip(formId: string, currentStatus: string) {
+		error = null;
 		const endpoint =
 			currentStatus === 'skipped' ? `/api/forms/${formId}/unskip` : `/api/queue/${formId}/skip`;
 
-		const res = await fetch(endpoint, { method: 'POST' });
-		if (res.ok) {
+		try {
+			const res = await fetch(endpoint, { method: 'POST' });
+			if (!res.ok) {
+				const errorMessage = await parseErrorResponse(res);
+				throw new Error(errorMessage);
+			}
 			window.location.reload();
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'An unexpected error occurred';
 		}
 	}
 
@@ -43,6 +64,13 @@
 			<a href="/" class="text-sm text-white/50 hover:text-white/80"> ← Back to Next Task </a>
 			<h1 class="mt-4 text-3xl font-bold text-white">All Tasks</h1>
 		</div>
+
+		<!-- Error display -->
+		{#if error}
+			<div class="mb-6 rounded-lg bg-red-500/20 p-4 text-red-200">
+				{error}
+			</div>
+		{/if}
 
 		<!-- Filters -->
 		<div class="mb-6 flex flex-wrap gap-2">

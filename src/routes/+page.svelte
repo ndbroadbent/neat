@@ -26,6 +26,24 @@
 		currentIndex = currentIndex === totalForms - 1 ? 0 : currentIndex + 1;
 	}
 
+	// Parse error response from API - handles various formats
+	async function parseErrorResponse(res: Response): Promise<string> {
+		try {
+			const data = await res.json();
+			// SvelteKit error format: { message: string }
+			if (data.message) return data.message;
+			// Alternative format: { error: { message: string } }
+			if (data.error?.message) return data.error.message;
+			// Plain error string
+			if (typeof data.error === 'string') return data.error;
+			// Fallback
+			return `Request failed (${res.status})`;
+		} catch {
+			// JSON parse failed
+			return `Request failed (${res.status})`;
+		}
+	}
+
 	async function handleSubmit(response: Record<string, unknown>) {
 		if (!currentForm) return;
 
@@ -40,14 +58,14 @@
 			});
 
 			if (!res.ok) {
-				const err = await res.json();
-				throw new Error(err.message || 'Failed to submit');
+				const errorMessage = await parseErrorResponse(res);
+				throw new Error(errorMessage);
 			}
 
 			// Reload to get updated forms
 			window.location.reload();
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Unknown error';
+			error = e instanceof Error ? e.message : 'An unexpected error occurred';
 		} finally {
 			submitting = false;
 		}
@@ -65,12 +83,13 @@
 			});
 
 			if (!res.ok) {
-				throw new Error('Failed to skip');
+				const errorMessage = await parseErrorResponse(res);
+				throw new Error(errorMessage);
 			}
 
 			window.location.reload();
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Unknown error';
+			error = e instanceof Error ? e.message : 'An unexpected error occurred';
 		} finally {
 			submitting = false;
 		}

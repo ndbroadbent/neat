@@ -66,7 +66,15 @@
 	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-4"
 >
 	{#if data.form}
-		<div class="w-full max-w-2xl rounded-2xl bg-white/10 p-10 shadow-2xl backdrop-blur-sm">
+		<div class="relative w-full max-w-2xl rounded-2xl bg-white/10 p-10 shadow-2xl backdrop-blur-sm">
+			<!-- All Tasks link -->
+			<a
+				href="/tasks"
+				class="absolute top-4 right-4 text-sm text-white/50 hover:text-white/80"
+			>
+				All Tasks
+			</a>
+
 			<!-- Header -->
 			<div class="mb-6">
 				{#if data.form.context}

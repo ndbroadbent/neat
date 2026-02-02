@@ -28,8 +28,10 @@
 		merger: createFormMerger,
 		validator: createFormValidator,
 		idBuilder: createFormIdBuilder,
-		onSubmit: (e: { formData: Record<string, unknown> }) => {
-			onSubmit(e.formData);
+		onSubmit: (e: { formData?: Record<string, unknown> }) => {
+			// Ensure formData is always an object
+			const data = e.formData ?? {};
+			onSubmit(data);
 		}
 	});
 

@@ -6,7 +6,22 @@ import type { RequestHandler } from './$types';
 
 // POST /api/queue/:id/submit - Submit form response
 export const POST: RequestHandler = async ({ params, request }) => {
-	const { response } = await request.json();
+	let body: { response?: unknown };
+	try {
+		body = await request.json();
+	} catch {
+		throw error(400, 'Invalid JSON in request body');
+	}
+
+	const { response } = body;
+
+	// Validate response
+	if (response === null || response === undefined) {
+		throw error(400, 'Response data is required');
+	}
+	if (typeof response !== 'object' || Array.isArray(response)) {
+		throw error(400, 'Response must be an object');
+	}
 
 	// Get the form
 	const [form] = await db.select().from(forms).where(eq(forms.id, params.id));
@@ -18,7 +33,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 	}
 
 	// Format response as comment
-	const commentBody = formatResponseAsComment(form.title, response);
+	const commentBody = formatResponseAsComment(form.title, response as Record<string, unknown>);
 
 	// Post comment to Fizzy
 	const commentResult = await addComment(form.fizzyCardNumber, commentBody);

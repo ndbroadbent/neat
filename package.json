@@ -59,6 +59,7 @@
 		"ajv": "8",
 		"better-sqlite3": "^11.9.1",
 		"drizzle-orm": "^0.45.1",
-		"nanoid": "^5.1.6"
+		"nanoid": "^5.1.6",
+		"pino": "^10.3.0"
 	}
 }

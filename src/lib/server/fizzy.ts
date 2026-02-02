@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { fizzyLogger } from './logger';
 
 // Check if we're in test/mock mode
 function isMockMode(): boolean {
@@ -22,19 +23,51 @@ async function fizzyFetch<T>(
 ): Promise<FizzyResponse<T>> {
 	// In mock mode, return success without actually calling Fizzy
 	if (isMockMode()) {
+		fizzyLogger.debug({ endpoint, mock: true }, 'Fizzy API call (mock mode)');
 		return { success: true, data: {} as T };
 	}
 
-	const response = await fetch(`${getApiBase()}${endpoint}`, {
-		...options,
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${env.FIZZY_TOKEN}`,
-			...options.headers
-		}
-	});
+	const start = Date.now();
+	const method = options.method || 'GET';
 
-	return response.json();
+	try {
+		const response = await fetch(`${getApiBase()}${endpoint}`, {
+			...options,
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${env.FIZZY_TOKEN}`,
+				...options.headers
+			}
+		});
+
+		const duration = Date.now() - start;
+		const result = await response.json();
+
+		fizzyLogger.info(
+			{
+				method,
+				endpoint,
+				status: response.status,
+				durationMs: duration,
+				success: result.success
+			},
+			'Fizzy API call'
+		);
+
+		return result;
+	} catch (error) {
+		const duration = Date.now() - start;
+		fizzyLogger.error(
+			{
+				method,
+				endpoint,
+				durationMs: duration,
+				error: error instanceof Error ? error.message : String(error)
+			},
+			'Fizzy API error'
+		);
+		return { success: false, error: { code: 'NETWORK_ERROR', message: String(error) } };
+	}
 }
 
 // Get card details

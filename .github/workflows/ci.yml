@@ -79,7 +79,7 @@ jobs:
         run: bun install
 
       - name: Install Playwright browsers
-        run: bunx playwright install firefox --with-deps
+        run: bunx playwright install --with-deps firefox
 
       - name: Run E2E tests
         run: bun run test:e2e

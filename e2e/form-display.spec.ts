@@ -246,13 +246,21 @@ test.describe('Form Submission', () => {
 		// Submit the form
 		await page.getByRole('button', { name: /submit/i }).click();
 
-		// Wait for submission to complete and next form to load
-		await page.waitForTimeout(1000);
+		// Poll for submission completion instead of fixed timeout
+		await expect
+			.poll(
+				async () => {
+					const res = await request.get(`/api/forms/${created.id}`);
+					const data = await res.json();
+					return data.status;
+				},
+				{ timeout: 10000 }
+			)
+			.toBe('completed');
 
-		// Verify form was submitted via API
+		// Verify response data
 		const checkResponse = await request.get(`/api/forms/${created.id}`);
 		const checkData = await checkResponse.json();
-		expect(checkData.status).toBe('completed');
 		expect(checkData.response).toEqual({ decision: 'approve' });
 	});
 

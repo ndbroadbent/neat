@@ -3,16 +3,16 @@ import { db, forms } from '$lib/server/db';
 import { eq, asc, desc } from 'drizzle-orm';
 
 export const load: PageServerLoad = async () => {
-	// Get next pending form (same logic as /api/queue)
+	// Get ALL pending forms for navigation
 	// Priority DESC (higher = more urgent), then oldest first
-	const [nextForm] = await db
+	const pendingForms = await db
 		.select()
 		.from(forms)
 		.where(eq(forms.status, 'pending'))
-		.orderBy(desc(forms.priority), asc(forms.createdAt))
-		.limit(1);
+		.orderBy(desc(forms.priority), asc(forms.createdAt));
 
 	return {
-		form: nextForm ?? null
+		forms: pendingForms,
+		form: pendingForms[0] ?? null // Keep for backwards compatibility
 	};
 };

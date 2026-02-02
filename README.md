@@ -4,6 +4,10 @@
 
 Neat is an ADHD-friendly, minimal decision UI for humans who work with AI agents. When your AI is faster than you can keep up with, Neat shows you exactly one task at a time with a custom form tailored to what that task needs from you.
 
+<p align="center">
+  <img src="docs/screenshot.jpg" alt="Neat UI Screenshot" width="800">
+</p>
+
 ## The Problem
 
 AI agents are becoming incredibly productive — often faster than their humans can keep up with. This creates a new bottleneck: the human's ability to make decisions, provide input, and stay in the loop.

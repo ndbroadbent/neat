@@ -15,10 +15,12 @@
 		"typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
-		"db:studio": "drizzle-kit studio"
+		"db:studio": "drizzle-kit studio",
+		"screenshot": "bun run scripts/screenshot.ts"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.2",
+		"@playwright/test": "^1.58.1",
 		"@sveltejs/adapter-auto": "^7.0.0",
 		"@sveltejs/kit": "^2.50.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
@@ -31,6 +33,7 @@
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.14.0",
 		"globals": "^17.3.0",
+		"playwright": "^1.58.1",
 		"postcss": "^8.5.6",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.4.1",

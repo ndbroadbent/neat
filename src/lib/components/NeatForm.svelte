@@ -1,12 +1,33 @@
 <script lang="ts">
 	import { createForm, BasicForm, type Schema, type UiSchema } from '@sjsf/form';
-	import { resolver } from '@sjsf/form/resolvers/basic';
 	import { translation } from '@sjsf/form/translations/en';
 	import { createFormMerger } from '@sjsf/form/mergers/modern';
 	import { createFormIdBuilder } from '@sjsf/form/id-builders/modern';
 	import { createFormValidator } from '@sjsf/ajv8-validator';
+	import { getSimpleSchemaType, isFixedItems } from '@sjsf/form/core';
 	import { theme } from './theme';
 	import '@sjsf/basic-theme/css/basic.css';
+
+	// Custom resolver that handles enum fields properly
+	function resolver() {
+		return ({ schema }: { schema: Schema }) => {
+			if (schema.oneOf !== undefined) {
+				return 'oneOfField';
+			}
+			if (schema.anyOf !== undefined) {
+				return 'anyOfField';
+			}
+			const type = getSimpleSchemaType(schema);
+			if (type === 'array') {
+				return isFixedItems(schema) ? 'tupleField' : 'arrayField';
+			}
+			// Use enumField for strings with enum values
+			if (type === 'string' && schema.enum) {
+				return 'enumField';
+			}
+			return `${type}Field`;
+		};
+	}
 
 	interface Props {
 		schema: Schema;

@@ -1,7 +1,14 @@
 # Build stage
-FROM oven/bun:1.3 AS builder
+FROM oven/bun:1.3-debian AS builder
 
 WORKDIR /app
+
+# Install build dependencies for native modules (better-sqlite3)
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package.json bun.lock ./
@@ -20,7 +27,10 @@ FROM oven/bun:1.3-slim
 
 WORKDIR /app
 
-# Copy built application
+# Install curl for healthcheck
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Copy built application and native modules
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
@@ -35,7 +45,7 @@ ENV HOST=0.0.0.0
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/ || exit 1
+  CMD curl -f http://localhost:3000/health || exit 1
 
 EXPOSE 3000
 

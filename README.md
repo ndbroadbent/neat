@@ -9,6 +9,7 @@ Neat is an ADHD-friendly, minimal decision UI for humans who work with AI agents
 AI agents are becoming incredibly productive — often faster than their humans can keep up with. This creates a new bottleneck: the human's ability to make decisions, provide input, and stay in the loop.
 
 For people with ADHD (or anyone overwhelmed by traditional task management), the cognitive load of:
+
 - Scanning a kanban board
 - Deciding what to work on
 - Context-switching between unrelated tasks
@@ -59,14 +60,14 @@ Neat sits in front of your task management system and:
 
 ### Form Types
 
-| Type | Use Case | UI Component |
-|------|----------|--------------|
-| `choice` | Multiple choice question | Buttons + "Other" text field |
-| `text` | Need freeform input | Text area |
-| `file` | Need a file/screenshot | Drag-and-drop upload zone |
-| `confirm` | Just need acknowledgment | Single "Done" button |
-| `steps` | Human needs to DO something | Step-by-step instructions with checkbox |
-| `info` | FYI, no action needed | Just a "Got it" button |
+| Type      | Use Case                    | UI Component                            |
+| --------- | --------------------------- | --------------------------------------- |
+| `choice`  | Multiple choice question    | Buttons + "Other" text field            |
+| `text`    | Need freeform input         | Text area                               |
+| `file`    | Need a file/screenshot      | Drag-and-drop upload zone               |
+| `confirm` | Just need acknowledgment    | Single "Done" button                    |
+| `steps`   | Human needs to DO something | Step-by-step instructions with checkbox |
+| `info`    | FYI, no action needed       | Just a "Got it" button                  |
 
 ## Architecture
 
@@ -165,28 +166,28 @@ POST   /api/queue/:id/skip     # Skip for now
 
 ```json
 {
-  "taskId": "task_123",
-  "title": "Choose database for new service",
-  "summary": "The monitoring service needs persistent storage...",
-  "schema": {
-    "type": "object",
-    "required": ["choice"],
-    "properties": {
-      "choice": {
-        "type": "string",
-        "title": "Which database?",
-        "enum": ["postgres", "sqlite", "redis"]
-      },
-      "notes": {
-        "type": "string",
-        "title": "Any additional context?"
-      }
-    }
-  },
-  "uiSchema": {
-    "choice": { "ui:widget": "radio" },
-    "notes": { "ui:widget": "textarea" }
-  }
+	"taskId": "task_123",
+	"title": "Choose database for new service",
+	"summary": "The monitoring service needs persistent storage...",
+	"schema": {
+		"type": "object",
+		"required": ["choice"],
+		"properties": {
+			"choice": {
+				"type": "string",
+				"title": "Which database?",
+				"enum": ["postgres", "sqlite", "redis"]
+			},
+			"notes": {
+				"type": "string",
+				"title": "Any additional context?"
+			}
+		}
+	},
+	"uiSchema": {
+		"choice": { "ui:widget": "radio" },
+		"notes": { "ui:widget": "textarea" }
+	}
 }
 ```
 

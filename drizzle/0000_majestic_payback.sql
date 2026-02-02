@@ -1,0 +1,20 @@
+CREATE TABLE `forms` (
+	`id` text PRIMARY KEY NOT NULL,
+	`fizzy_card_id` text NOT NULL,
+	`fizzy_card_number` integer NOT NULL,
+	`fizzy_board_id` text,
+	`title` text NOT NULL,
+	`summary` text,
+	`references` text,
+	`schema` text NOT NULL,
+	`ui_schema` text,
+	`on_submit` text DEFAULT 'comment',
+	`target_column` text,
+	`status` text DEFAULT 'pending' NOT NULL,
+	`response` text,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
+	`completed_at` integer,
+	`context` text,
+	`priority` integer DEFAULT 0
+);

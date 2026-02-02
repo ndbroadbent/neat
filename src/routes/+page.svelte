@@ -114,12 +114,16 @@
 					<div class="mb-6">
 						<!-- Task counter -->
 						{#if totalForms > 1}
-							<span class="mb-2 mr-2 inline-block rounded-full bg-white/20 px-3 py-1 text-sm text-blue-200">
+							<span
+								class="mr-2 mb-2 inline-block rounded-full bg-white/20 px-3 py-1 text-sm text-blue-200"
+							>
 								{currentIndex + 1} / {totalForms}
 							</span>
 						{/if}
 						{#if currentForm.context}
-							<span class="mb-2 inline-block rounded-full bg-white/20 px-3 py-1 text-sm text-blue-200">
+							<span
+								class="mb-2 inline-block rounded-full bg-white/20 px-3 py-1 text-sm text-blue-200"
+							>
 								{currentForm.context}
 							</span>
 						{/if}

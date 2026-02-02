@@ -1,17 +1,12 @@
+# syntax=docker/dockerfile:1
+
 # Build stage
-FROM oven/bun:1.3-debian AS builder
+FROM oven/bun:1 AS builder
 
 WORKDIR /app
 
-# Install build dependencies for native modules (better-sqlite3)
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
 # Copy package files
-COPY package.json bun.lock ./
+COPY package.json bun.lock* ./
 
 # Install dependencies
 RUN bun install --frozen-lockfile
@@ -23,31 +18,25 @@ COPY . .
 RUN bun run build
 
 # Production stage
-FROM oven/bun:1.3-slim
+FROM oven/bun:1-slim AS production
 
 WORKDIR /app
 
-# Install curl for healthcheck
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-
-# Copy built application and native modules
+# Copy built app and node_modules for better-sqlite3
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/drizzle ./drizzle
 
 # Create data directory for SQLite
-RUN mkdir -p /opt/neat/data
+RUN mkdir -p /app/data
 
 # Set environment
 ENV NODE_ENV=production
-ENV PORT=3000
 ENV HOST=0.0.0.0
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/health || exit 1
+ENV PORT=3000
 
 EXPOSE 3000
 
-# Run with bun
-CMD ["bun", "run", "build/index.js"]
+# Run migrations and start server
+CMD ["sh", "-c", "bun run db:migrate && bun ./build/index.js"]

@@ -46,20 +46,27 @@ describe('Page Server Load', () => {
 		await cleanupTestForms();
 	});
 
-	it('should return null when no pending forms', async () => {
-		const result = (await load({} as Parameters<typeof load>[0])) as { form: unknown };
+	it('should return null and empty array when no pending forms', async () => {
+		const result = (await load({} as Parameters<typeof load>[0])) as {
+			form: unknown;
+			forms: unknown[];
+		};
 		expect(result.form).toBeNull();
+		expect(result.forms).toEqual([]);
 	});
 
-	it('should return the first pending form', async () => {
+	it('should return the first pending form and all forms array', async () => {
 		await createTestForm();
 
 		const result = (await load({} as Parameters<typeof load>[0])) as {
 			form: { title: string } | null;
+			forms: { title: string }[];
 		};
 
 		expect(result.form).toBeDefined();
 		expect(result.form?.title).toBe('Page Test Form');
+		expect(result.forms).toHaveLength(1);
+		expect(result.forms[0].title).toBe('Page Test Form');
 	});
 
 	it('should return higher priority forms first', async () => {
@@ -68,15 +75,23 @@ describe('Page Server Load', () => {
 
 		const result = (await load({} as Parameters<typeof load>[0])) as {
 			form: { title: string } | null;
+			forms: { title: string }[];
 		};
 
 		expect(result.form?.title).toBe('High Priority Page');
+		expect(result.forms).toHaveLength(2);
+		expect(result.forms[0].title).toBe('High Priority Page');
+		expect(result.forms[1].title).toBe('Low Priority Page');
 	});
 
 	it('should not return completed forms', async () => {
 		await createTestForm({ status: 'completed' });
 
-		const result = (await load({} as Parameters<typeof load>[0])) as { form: unknown };
+		const result = (await load({} as Parameters<typeof load>[0])) as {
+			form: unknown;
+			forms: unknown[];
+		};
 		expect(result.form).toBeNull();
+		expect(result.forms).toEqual([]);
 	});
 });

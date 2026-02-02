@@ -29,5 +29,11 @@ export default [
 	},
 	{
 		ignores: ['build/', '.svelte-kit/', 'dist/', 'node_modules/']
+	},
+	{
+		// External links don't need SvelteKit resolve()
+		rules: {
+			'svelte/no-navigation-without-resolve': 'off'
+		}
 	}
 ];

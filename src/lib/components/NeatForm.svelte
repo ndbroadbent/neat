@@ -100,14 +100,14 @@
 	}
 
 	/* Typeform-style radio card buttons */
-	.neat-form :global(.sjsf-radio-group),
-	.neat-form :global([role='radiogroup']) {
+	/* Container for radio options - make vertical */
+	.neat-form :global([data-layout='field-content']:has(.sjsf-radio)) {
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
 	}
-	.neat-form :global(.sjsf-radio-group label),
-	.neat-form :global([role='radiogroup'] label) {
+	/* Each radio option as a card */
+	.neat-form :global(.sjsf-radio) {
 		position: relative;
 		display: flex;
 		align-items: center;
@@ -123,22 +123,19 @@
 		font-weight: 500;
 		margin-bottom: 0;
 	}
-	.neat-form :global(.sjsf-radio-group label:hover),
-	.neat-form :global([role='radiogroup'] label:hover) {
+	.neat-form :global(.sjsf-radio:hover) {
 		background: rgba(255, 255, 255, 0.1);
 		border-color: rgba(255, 255, 255, 0.4);
 		transform: translateY(-1px);
 	}
 	/* Selected state */
-	.neat-form :global(.sjsf-radio-group label:has(input:checked)),
-	.neat-form :global([role='radiogroup'] label:has(input:checked)) {
+	.neat-form :global(.sjsf-radio:has(input:checked)) {
 		background: rgba(255, 255, 255, 0.15);
 		border-color: white;
 		box-shadow: 0 0 0 1px white;
 	}
 	/* Hide native radio, create custom circle */
-	.neat-form :global(.sjsf-radio-group input[type='radio']),
-	.neat-form :global([role='radiogroup'] input[type='radio']) {
+	.neat-form :global(.sjsf-radio input[type='radio']) {
 		appearance: none;
 		-webkit-appearance: none;
 		width: 1.5rem;
@@ -150,15 +147,14 @@
 		cursor: pointer;
 		transition: all 0.2s ease;
 		position: relative;
+		flex-shrink: 0;
 	}
 	/* Checkmark inside when selected */
-	.neat-form :global(.sjsf-radio-group input[type='radio']:checked),
-	.neat-form :global([role='radiogroup'] input[type='radio']:checked) {
+	.neat-form :global(.sjsf-radio input[type='radio']:checked) {
 		border-color: white;
 		background: white;
 	}
-	.neat-form :global(.sjsf-radio-group input[type='radio']:checked::after),
-	.neat-form :global([role='radiogroup'] input[type='radio']:checked::after) {
+	.neat-form :global(.sjsf-radio input[type='radio']:checked::after) {
 		content: '';
 		position: absolute;
 		top: 50%;

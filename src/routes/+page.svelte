@@ -71,7 +71,7 @@
 	</a>
 
 	{#if data.form}
-		<div class="w-full max-w-2xl rounded-2xl bg-white/10 p-10 shadow-2xl backdrop-blur-sm">
+		<div class="w-full max-w-3xl rounded-2xl bg-white/10 p-10 shadow-2xl backdrop-blur-sm">
 			<!-- Header -->
 			<div class="mb-6">
 				{#if data.form.context}

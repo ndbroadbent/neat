@@ -8,6 +8,9 @@
 	import { theme } from './theme';
 	import '@sjsf/basic-theme/css/basic.css';
 
+	// Threshold for switching from radio buttons to select dropdown
+	const RADIO_MAX_OPTIONS = 4;
+
 	interface Props {
 		schema: Schema;
 		uiSchema?: UiSchema;
@@ -19,10 +22,43 @@
 
 	let formRef: HTMLFormElement | undefined = $state();
 
+	// Generate smart uiSchema based on enum option counts
+	// ≤4 options: radio buttons, >4 options: select dropdown
+	function generateSmartUiSchema(
+		schemaArg: Schema,
+		existingUiSchema?: UiSchema
+	): UiSchema | undefined {
+		const properties = schemaArg.properties as Record<string, Schema> | undefined;
+		if (!properties) return existingUiSchema;
+
+		const overrides: UiSchema = {};
+
+		for (const [key, propSchema] of Object.entries(properties)) {
+			// Check if this is an enum field
+			if (propSchema.enum && Array.isArray(propSchema.enum)) {
+				const optionCount = propSchema.enum.length;
+				if (optionCount <= RADIO_MAX_OPTIONS) {
+					// Use radio buttons for small option counts
+					overrides[key] = {
+						'ui:components': { selectWidget: 'radioWidget' }
+					};
+				}
+				// >4 options: leave as default select dropdown
+			}
+		}
+
+		// Merge with existing uiSchema (existing takes precedence)
+		if (Object.keys(overrides).length === 0) return existingUiSchema;
+
+		return { ...overrides, ...existingUiSchema } as UiSchema;
+	}
+
+	const smartUiSchema = generateSmartUiSchema(schema, uiSchema);
+
 	const form = createForm({
 		theme,
 		schema,
-		uiSchema,
+		uiSchema: smartUiSchema,
 		resolver,
 		translation,
 		merger: createFormMerger,
@@ -118,7 +154,7 @@
 		background: rgba(255, 255, 255, 0.05);
 		cursor: pointer;
 		transition: all 0.2s ease;
-		font-size: 1.25rem;
+		font-size: 1.1rem;
 		color: white;
 		font-weight: 500;
 		margin-bottom: 0;
@@ -131,8 +167,7 @@
 	/* Selected state */
 	.neat-form :global(.sjsf-radio:has(input:checked)) {
 		background: rgba(255, 255, 255, 0.15);
-		border-color: white;
-		box-shadow: 0 0 0 1px white;
+		border-color: rgba(255, 255, 255, 0.7);
 	}
 	/* Hide native radio, create custom circle */
 	.neat-form :global(.sjsf-radio input[type='radio']) {

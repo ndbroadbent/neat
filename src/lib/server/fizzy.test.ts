@@ -72,7 +72,7 @@ describe('Fizzy API Client', () => {
 				'https://fizzy.test.com/test-account/cards/42/comments.json',
 				expect.objectContaining({
 					method: 'POST',
-					body: JSON.stringify({ body: 'Test comment' })
+					body: JSON.stringify({ comment: { body: 'Test comment' } })
 				})
 			);
 			expect(result.success).toBe(true);

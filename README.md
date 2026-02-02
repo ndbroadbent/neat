@@ -113,8 +113,7 @@ Neat sits in front of your task management system and:
 
 ### Prerequisites
 
-- Node.js 22+
-- pnpm
+- [Bun](https://bun.sh/) (recommended) or Node.js 22+
 
 ### Installation
 
@@ -124,10 +123,13 @@ git clone https://github.com/ndbroadbent/neat.git
 cd neat
 
 # Install dependencies
-pnpm install
+bun install
+
+# Run database migrations
+bun run db:migrate
 
 # Start development server
-pnpm dev
+bun run dev
 ```
 
 ### Configuration
@@ -135,12 +137,13 @@ pnpm dev
 Create a `.env` file:
 
 ```bash
-# Task backend (e.g., Fizzy)
-TASK_API_URL=https://your-task-api.example.com
-TASK_API_TOKEN=your-token
+# Database (SQLite)
+DATABASE_URL=file:./data/neat.db
 
-# File uploads
-UPLOAD_DIR=/opt/neat-uploads
+# Fizzy connection
+FIZZY_API_URL=https://your-fizzy-instance.example.com
+FIZZY_ACCOUNT=1
+FIZZY_TOKEN=your-access-token
 ```
 
 ## API
@@ -193,18 +196,41 @@ POST   /api/queue/:id/skip     # Skip for now
 
 ## Roadmap
 
-- [x] SvelteKit project setup
-- [x] README and documentation
-- [ ] Deploy to K3s (in progress)
-- [ ] SQLite database with Drizzle ORM
-- [ ] Form CRUD API
-- [ ] JSON Schema form renderer
-- [ ] Queue with prioritization
-- [ ] Context clustering (minimize context-switching)
-- [ ] File upload support
-- [ ] Mobile responsive
-- [ ] Keyboard shortcuts
-- [ ] Generic task backend adapters
+### v0.1 — Core Infrastructure ✅
+- [x] SvelteKit project with Tailwind, TypeScript
+- [x] Full CI pipeline (lint, typecheck, test, build, Docker)
+- [x] SQLite database with Drizzle ORM
+- [x] Form CRUD API (`/api/forms/*`)
+- [x] JSON Schema form renderer (`@sjsf/form`)
+- [x] Queue endpoint with submit flow
+- [x] Fizzy integration (comments on submit)
+- [ ] **Deploy to K3s** ← *in progress*
+
+### v0.2 — Full Form Experience
+- [ ] File upload support with drag-and-drop
+- [ ] References display (links, docs, videos)
+- [ ] Markdown summary rendering
+- [ ] All JSON Schema widgets (select, checkbox, etc.)
+- [ ] UI Schema support for custom styling
+
+### v0.3 — Smart Prioritization
+- [ ] Context/category tagging on forms
+- [ ] Clustering algorithm (same context = consecutive)
+- [ ] Priority weighting
+- [ ] "Skip for now" with return logic
+- [ ] Progress indicator ("3 more in this context")
+
+### v0.4 — Polish
+- [ ] Mobile responsive design
+- [ ] Keyboard shortcuts (1/2/3 for choices, Enter to submit)
+- [ ] Sound/haptic feedback on completion
+- [ ] Dark/light mode toggle
+
+### v1.0 — Open Source Release
+- [ ] Comprehensive documentation
+- [ ] Docker image on GHCR
+- [ ] Helm chart for K8s
+- [ ] Generic task backend adapters (Linear, GitHub Issues, etc.)
 
 ## Philosophy
 

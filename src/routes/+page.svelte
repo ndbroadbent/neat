@@ -128,8 +128,15 @@
 			</div>
 
 			<!-- Card link -->
-			<div class="mt-6 border-t border-white/20 pt-4 text-center text-sm text-blue-300">
-				Fizzy card #{data.form.fizzyCardNumber}
+			<div class="mt-6 border-t border-white/20 pt-4 text-center text-sm">
+				<a
+					href="https://fizzy.home.ndbroadbent.com/1/cards/{data.form.fizzyCardNumber}"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="text-blue-300 hover:text-white hover:underline"
+				>
+					Fizzy card #{data.form.fizzyCardNumber}
+				</a>
 			</div>
 		</div>
 	{:else}

@@ -99,7 +99,7 @@
 		display: none;
 	}
 
-	/* Radio button styling */
+	/* Typeform-style radio card buttons */
 	.neat-form :global(.sjsf-radio-group),
 	.neat-form :global([role='radiogroup']) {
 		display: flex;
@@ -108,30 +108,66 @@
 	}
 	.neat-form :global(.sjsf-radio-group label),
 	.neat-form :global([role='radiogroup'] label) {
+		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-		padding: 1rem;
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		border-radius: 0.5rem;
-		background: rgba(255, 255, 255, 0.1);
+		gap: 1rem;
+		padding: 1.25rem 1.5rem;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+		border-radius: 0.75rem;
+		background: rgba(255, 255, 255, 0.05);
 		cursor: pointer;
-		transition: all 0.15s ease;
-		font-size: 1.125rem;
+		transition: all 0.2s ease;
+		font-size: 1.25rem;
 		color: white;
-		font-weight: 400;
+		font-weight: 500;
 		margin-bottom: 0;
 	}
 	.neat-form :global(.sjsf-radio-group label:hover),
 	.neat-form :global([role='radiogroup'] label:hover) {
-		background: rgba(255, 255, 255, 0.15);
-		border-color: rgba(255, 255, 255, 0.3);
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.4);
+		transform: translateY(-1px);
 	}
+	/* Selected state */
+	.neat-form :global(.sjsf-radio-group label:has(input:checked)),
+	.neat-form :global([role='radiogroup'] label:has(input:checked)) {
+		background: rgba(255, 255, 255, 0.15);
+		border-color: white;
+		box-shadow: 0 0 0 1px white;
+	}
+	/* Hide native radio, create custom circle */
 	.neat-form :global(.sjsf-radio-group input[type='radio']),
 	.neat-form :global([role='radiogroup'] input[type='radio']) {
-		width: 1.25rem;
-		height: 1.25rem;
-		accent-color: white;
+		appearance: none;
+		-webkit-appearance: none;
+		width: 1.5rem;
+		height: 1.5rem;
+		min-width: 1.5rem;
+		border: 2px solid rgba(255, 255, 255, 0.4);
+		border-radius: 50%;
+		background: transparent;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		position: relative;
+	}
+	/* Checkmark inside when selected */
+	.neat-form :global(.sjsf-radio-group input[type='radio']:checked),
+	.neat-form :global([role='radiogroup'] input[type='radio']:checked) {
+		border-color: white;
+		background: white;
+	}
+	.neat-form :global(.sjsf-radio-group input[type='radio']:checked::after),
+	.neat-form :global([role='radiogroup'] input[type='radio']:checked::after) {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -60%) rotate(45deg);
+		width: 0.35rem;
+		height: 0.6rem;
+		border: solid #1e3a5f;
+		border-width: 0 2px 2px 0;
 	}
 
 	/* Checkbox styling */

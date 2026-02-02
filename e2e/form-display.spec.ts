@@ -474,9 +474,7 @@ test.describe('Backend Schema Validation', () => {
 		});
 	});
 
-	test('should reject extra properties when additionalProperties is false', async ({
-		request
-	}) => {
+	test('should reject extra properties when additionalProperties is false', async ({ request }) => {
 		const uniqueId = testId();
 
 		// Create strict schema

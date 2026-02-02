@@ -66,10 +66,7 @@
 	class="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-4"
 >
 	<!-- All Tasks link - always visible, top-right of page -->
-	<a
-		href="/tasks"
-		class="fixed top-6 right-6 text-lg text-white/50 hover:text-white/80"
-	>
+	<a href="/tasks" class="fixed top-6 right-6 text-lg text-white/50 hover:text-white/80">
 		All Tasks
 	</a>
 

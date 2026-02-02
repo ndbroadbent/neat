@@ -5,9 +5,7 @@
 
 	async function toggleSkip(formId: string, currentStatus: string) {
 		const endpoint =
-			currentStatus === 'skipped'
-				? `/api/forms/${formId}/unskip`
-				: `/api/queue/${formId}/skip`;
+			currentStatus === 'skipped' ? `/api/forms/${formId}/unskip` : `/api/queue/${formId}/skip`;
 
 		const res = await fetch(endpoint, { method: 'POST' });
 		if (res.ok) {
@@ -38,15 +36,11 @@
 	<title>All Tasks — Neat</title>
 </svelte:head>
 
-<main
-	class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-4 md:p-8"
->
+<main class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-4 md:p-8">
 	<div class="mx-auto max-w-4xl">
 		<!-- Header -->
 		<div class="mb-8">
-			<a href="/" class="text-sm text-white/50 hover:text-white/80">
-				← Back to Next Task
-			</a>
+			<a href="/" class="text-sm text-white/50 hover:text-white/80"> ← Back to Next Task </a>
 			<h1 class="mt-4 text-3xl font-bold text-white">All Tasks</h1>
 		</div>
 
@@ -55,9 +49,7 @@
 			<a
 				href="/tasks"
 				class="rounded-full px-4 py-2 text-sm font-medium transition-colors
-					{!data.currentFilter
-					? 'bg-white text-blue-900'
-					: 'bg-white/10 text-white hover:bg-white/20'}"
+					{!data.currentFilter ? 'bg-white text-blue-900' : 'bg-white/10 text-white hover:bg-white/20'}"
 			>
 				All ({data.counts.pending + data.counts.skipped + data.counts.completed})
 			</a>

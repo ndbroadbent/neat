@@ -38,7 +38,7 @@ jobs:
         run: bun install
 
       - name: Run database migrations
-        run: bun run db:migrate
+        run: mkdir -p data && bun run db:migrate
 
       - name: Format check
         run: bun run format:check
@@ -85,7 +85,7 @@ jobs:
         run: bunx playwright install --with-deps firefox
 
       - name: Run database migrations
-        run: bun run db:migrate
+        run: mkdir -p data && bun run db:migrate
 
       - name: Run E2E tests
         run: bun run test:e2e

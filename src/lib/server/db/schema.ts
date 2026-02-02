@@ -67,12 +67,25 @@ export interface JSONSchemaProperty {
 	format?: string; // e.g., 'data-url' for file uploads
 }
 
-export interface UISchema {
-	[key: string]: {
-		'ui:widget'?: 'radio' | 'select' | 'textarea' | 'checkbox' | 'file';
-		'ui:placeholder'?: string;
-		'ui:help'?: string;
+/**
+ * UISchema for @sjsf/form widget configuration
+ *
+ * IMPORTANT: @sjsf/form uses 'ui:components' NOT 'ui:widget'!
+ * - Radio buttons: { 'ui:components': { selectWidget: 'radioWidget' } }
+ * - Textarea: { 'ui:components': { textWidget: 'textareaWidget' } }
+ */
+export interface UISchemaField {
+	'ui:components'?: {
+		selectWidget?: 'radioWidget';
+		textWidget?: 'textareaWidget';
 	};
+	'ui:placeholder'?: string;
+	'ui:help'?: string;
+	'ui:options'?: Record<string, unknown>;
+}
+
+export interface UISchema {
+	[key: string]: UISchemaField | undefined;
 }
 
 // Infer types for queries

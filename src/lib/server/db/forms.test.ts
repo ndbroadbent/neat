@@ -3,7 +3,7 @@
  * Tests all input types and form lifecycle
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { nanoid } from 'nanoid';
 import type { JSONSchema, UISchema, NewForm } from './schema';
 
@@ -86,16 +86,6 @@ describe('Form Schema Types', () => {
 		});
 
 		it('should support textarea with ui:components', () => {
-			const schema: JSONSchema = {
-				type: 'object',
-				properties: {
-					description: {
-						type: 'string',
-						title: 'Description'
-					}
-				}
-			};
-
 			const uiSchema: UISchema = {
 				description: {
 					'ui:components': { textWidget: 'textareaWidget' }
@@ -103,6 +93,7 @@ describe('Form Schema Types', () => {
 			};
 
 			expect(uiSchema.description?.['ui:components']).toBeDefined();
+			expect(uiSchema.description?.['ui:components']?.textWidget).toBe('textareaWidget');
 		});
 	});
 
@@ -190,6 +181,8 @@ describe('Form Schema Types', () => {
 
 			expect(Object.keys(schema.properties)).toHaveLength(4);
 			expect(schema.required).toHaveLength(2);
+			expect(uiSchema.choice?.['ui:components']?.selectWidget).toBe('radioWidget');
+			expect(uiSchema.notes?.['ui:components']?.textWidget).toBe('textareaWidget');
 		});
 	});
 });
@@ -203,6 +196,9 @@ describe('Form Validation', () => {
 				name: { type: 'string', title: 'Name' }
 			}
 		};
+
+		// Schema should have required field
+		expect(schema.required).toContain('name');
 
 		// Empty response should fail validation
 		const emptyResponse = {};

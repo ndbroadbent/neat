@@ -5,11 +5,8 @@
 	import { createFormMerger } from '@sjsf/form/mergers/modern';
 	import { createFormIdBuilder } from '@sjsf/form/id-builders/modern';
 	import { createFormValidator } from '@sjsf/ajv8-validator';
-	import { theme } from '@sjsf/basic-theme';
+	import { theme } from './theme';
 	import '@sjsf/basic-theme/css/basic.css';
-	// Include extra widgets (radio, textarea, etc.)
-	import '@sjsf/basic-theme/extra-widgets/radio-include';
-	import '@sjsf/basic-theme/extra-widgets/textarea-include';
 
 	interface Props {
 		schema: Schema;

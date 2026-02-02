@@ -67,8 +67,10 @@
 
 		return Object.entries(properties)
 			.filter(([, propSchema]) => {
-				const enumValues = propSchema.enum as string[] | undefined;
-				return enumValues?.some((v) => v.toLowerCase() === 'other');
+				const enumValues = propSchema.enum as unknown[] | undefined;
+				return enumValues?.some(
+					(v) => typeof v === 'string' && v.toLowerCase() === 'other'
+				);
 			})
 			.map(([key]) => key);
 	}
@@ -97,19 +99,19 @@
 					finalValue[field] = otherInputs[field].trim();
 				}
 			}
-			onSubmit(finalValue ?? {});
+			onSubmit(finalValue);
 		}
 	});
 
-	// Setup mutation observer to inject "Other" text inputs
+	// Inject "Other" text inputs after form renders (using delayed init + event listeners)
 	onMount(() => {
 		if (!formContainer || fieldsWithOther.length === 0) return;
 
 		const injectOtherInputs = () => {
 			for (const fieldName of fieldsWithOther) {
-				// Find the radio/select for this field
+				// Find the radio/select for this field (exact name match or array notation)
 				const fieldInputs = formContainer?.querySelectorAll(
-					`input[name*="${fieldName}"], select[name*="${fieldName}"]`
+					`input[name="${fieldName}"], input[name^="${fieldName}["], select[name="${fieldName}"], select[name^="${fieldName}["]`
 				);
 				if (!fieldInputs?.length) continue;
 

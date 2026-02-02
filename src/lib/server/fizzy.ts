@@ -1,6 +1,8 @@
-import { FIZZY_API_URL, FIZZY_TOKEN, FIZZY_ACCOUNT } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
-const API_BASE = `${FIZZY_API_URL}/${FIZZY_ACCOUNT}`;
+function getApiBase() {
+	return `${env.FIZZY_API_URL}/${env.FIZZY_ACCOUNT}`;
+}
 
 interface FizzyResponse<T> {
 	success: boolean;
@@ -13,11 +15,11 @@ async function fizzyFetch<T>(
 	endpoint: string,
 	options: RequestInit = {}
 ): Promise<FizzyResponse<T>> {
-	const response = await fetch(`${API_BASE}${endpoint}`, {
+	const response = await fetch(`${getApiBase()}${endpoint}`, {
 		...options,
 		headers: {
 			'Content-Type': 'application/json',
-			Authorization: `Bearer ${FIZZY_TOKEN}`,
+			Authorization: `Bearer ${env.FIZZY_TOKEN}`,
 			...options.headers
 		}
 	});

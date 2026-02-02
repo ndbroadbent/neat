@@ -68,9 +68,7 @@
 		return Object.entries(properties)
 			.filter(([, propSchema]) => {
 				const enumValues = propSchema.enum as unknown[] | undefined;
-				return enumValues?.some(
-					(v) => typeof v === 'string' && v.toLowerCase() === 'other'
-				);
+				return enumValues?.some((v) => typeof v === 'string' && v.toLowerCase() === 'other');
 			})
 			.map(([key]) => key);
 	}

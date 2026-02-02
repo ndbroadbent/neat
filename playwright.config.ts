@@ -21,6 +21,9 @@ export default defineConfig({
 		command: 'bun run dev',
 		url: 'http://localhost:5173',
 		reuseExistingServer: !process.env.CI,
-		timeout: 120000
+		timeout: 120000,
+		env: {
+			FIZZY_MOCK: 'true'
+		}
 	}
 });

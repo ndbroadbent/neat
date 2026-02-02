@@ -1,5 +1,10 @@
 import { env } from '$env/dynamic/private';
 
+// Check if we're in test/mock mode
+function isMockMode(): boolean {
+	return env.FIZZY_MOCK === 'true' || env.NODE_ENV === 'test';
+}
+
 function getApiBase() {
 	return `${env.FIZZY_API_URL}/${env.FIZZY_ACCOUNT}`;
 }
@@ -15,6 +20,11 @@ async function fizzyFetch<T>(
 	endpoint: string,
 	options: RequestInit = {}
 ): Promise<FizzyResponse<T>> {
+	// In mock mode, return success without actually calling Fizzy
+	if (isMockMode()) {
+		return { success: true, data: {} as T };
+	}
+
 	const response = await fetch(`${getApiBase()}${endpoint}`, {
 		...options,
 		headers: {

@@ -28,10 +28,9 @@
 		merger: createFormMerger,
 		validator: createFormValidator,
 		idBuilder: createFormIdBuilder,
-		onSubmit: (e: { formData?: Record<string, unknown> }) => {
-			// Ensure formData is always an object
-			const data = e.formData ?? {};
-			onSubmit(data);
+		onSubmit: (value: Record<string, unknown>) => {
+			// value is the form data (first argument, not event.formData)
+			onSubmit(value ?? {});
 		}
 	});
 

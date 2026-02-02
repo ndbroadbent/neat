@@ -194,6 +194,8 @@ POST   /api/queue/:id/skip     # Skip for now
 ## Roadmap
 
 - [x] SvelteKit project setup
+- [x] README and documentation
+- [ ] Deploy to K3s (in progress)
 - [ ] SQLite database with Drizzle ORM
 - [ ] Form CRUD API
 - [ ] JSON Schema form renderer

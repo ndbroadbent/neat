@@ -21,9 +21,9 @@ tasks:
 
   # Testing
   test:
-    desc: Run tests
+    desc: Run tests with coverage
     cmds:
-      - bun test
+      - bun run test:coverage
 
   # Code Quality
   format:

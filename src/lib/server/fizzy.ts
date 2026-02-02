@@ -4,9 +4,9 @@ function getApiBase() {
 	return `${env.FIZZY_API_URL}/${env.FIZZY_ACCOUNT}`;
 }
 
-interface FizzyResponse<T> {
+export interface FizzyResponse<T> {
 	success: boolean;
-	data: T;
+	data?: T;
 	error?: { code: string; message: string };
 }
 

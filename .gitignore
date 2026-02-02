@@ -36,3 +36,4 @@ uploads/
 playwright-report/
 test-results/
 playwright/.cache/
+coverage/

@@ -1,0 +1,11 @@
+# Package managers
+node_modules
+bun.lock
+
+# Build outputs
+.svelte-kit
+build
+dist
+
+# Generated
+*.min.*

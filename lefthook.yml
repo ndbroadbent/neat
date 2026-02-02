@@ -1,0 +1,30 @@
+# Git hooks managed by Lefthook
+# https://github.com/evilmartians/lefthook
+
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      glob: '*.{ts,svelte,js,json,css}'
+      run: bun run format:check
+
+    lint:
+      glob: '*.{ts,svelte}'
+      run: bun run lint
+
+pre-push:
+  commands:
+    # CRITICAL: Scan for secrets before pushing
+    secrets:
+      run: |
+        if command -v trufflehog &> /dev/null; then
+          trufflehog git file://. --since-commit HEAD~1 --fail --no-update
+        else
+          echo "⚠️  TruffleHog not installed. Install with: brew install trufflehog"
+        fi
+
+    typecheck:
+      run: bun run typecheck
+
+    test:
+      run: bun test

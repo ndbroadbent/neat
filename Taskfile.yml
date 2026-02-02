@@ -1,0 +1,64 @@
+version: '3'
+
+tasks:
+  # Setup
+  setup:
+    desc: Install dependencies
+    cmds:
+      - bun install
+
+  # Development
+  dev:
+    desc: Start development server
+    cmds:
+      - bun run dev
+
+  # Build
+  build:
+    desc: Build for production
+    cmds:
+      - bun run build
+
+  # Testing
+  test:
+    desc: Run tests
+    cmds:
+      - bun test
+
+  # Code Quality
+  format:
+    desc: Format code
+    cmds:
+      - bun run format
+
+  format:check:
+    desc: Check formatting
+    cmds:
+      - bun run format:check
+
+  lint:
+    desc: Lint code
+    cmds:
+      - bun run lint
+
+  typecheck:
+    desc: Type check
+    cmds:
+      - bun run typecheck
+
+  check-length:
+    desc: Check file length limits
+    cmds:
+      - ./bin/check-file-length.sh
+
+  # CI
+  ci:
+    desc: Run all CI checks
+    cmds:
+      - task: format:check
+      - task: lint
+      - task: typecheck
+      - task: check-length
+      - task: test
+      - task: build
+      - echo "✅ All CI checks passed!"

@@ -46,7 +46,7 @@ export async function getCard(cardNumber: number) {
 export async function addComment(cardNumber: number, body: string) {
 	return fizzyFetch<FizzyComment>(`/cards/${cardNumber}/comments.json`, {
 		method: 'POST',
-		body: JSON.stringify({ body })
+		body: JSON.stringify({ comment: { body } })
 	});
 }
 

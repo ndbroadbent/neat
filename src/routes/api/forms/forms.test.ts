@@ -3,7 +3,7 @@
  * Tests CRUD operations and form submission flow
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { nanoid } from 'nanoid';
 
 // Test form data for all input types
@@ -241,6 +241,7 @@ describe('Form Response Validation', () => {
 		const response = { approved: true };
 
 		expect(typeof response.approved).toBe('boolean');
+		expect(form.schema.properties.approved.type).toBe('boolean');
 	});
 
 	it('should accept string response for textarea', () => {
@@ -248,6 +249,7 @@ describe('Form Response Validation', () => {
 		const response = { description: 'Some long text here...' };
 
 		expect(typeof response.description).toBe('string');
+		expect(form.schema.properties.description.type).toBe('string');
 	});
 
 	it('should accept number response for number input', () => {
@@ -255,6 +257,7 @@ describe('Form Response Validation', () => {
 		const response = { quantity: 42 };
 
 		expect(typeof response.quantity).toBe('number');
+		expect(form.schema.properties.quantity.type).toBe('number');
 	});
 });
 

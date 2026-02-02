@@ -3,6 +3,7 @@ import { drizzle, type BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
 import { mkdirSync, existsSync } from 'fs';
 import { dirname } from 'path';
 import * as schema from './schema';
+import { dbLogger } from '../logger';
 
 // Database path from environment or default
 const DB_PATH = process.env.DATABASE_URL?.replace('file:', '') || './data/neat.db';
@@ -18,9 +19,11 @@ export function getDb(): BetterSQLite3Database<typeof schema> {
 			mkdirSync(dir, { recursive: true });
 		}
 
+		dbLogger.info({ path: DB_PATH }, 'Initializing database connection');
 		const sqlite = new Database(DB_PATH);
 		sqlite.pragma('journal_mode = WAL');
 		_db = drizzle(sqlite, { schema });
+		dbLogger.info({ path: DB_PATH }, 'Database connection established');
 	}
 	return _db;
 }

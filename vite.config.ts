@@ -6,6 +6,9 @@ export default defineConfig({
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		exclude: ['e2e/**', 'node_modules/**'],
+		// Disable parallel execution between files to prevent test isolation issues
+		// (all tests share the same in-memory SQLite database)
+		fileParallelism: false,
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'json', 'html'],

@@ -37,7 +37,7 @@
 	<div class="mt-6">
 		<button
 			type="submit"
-			class="w-full rounded-lg bg-blue-600 px-4 py-3 text-lg font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+			class="w-full rounded-lg bg-white px-4 py-3 text-lg font-medium text-blue-900 hover:bg-blue-100 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-900 focus:outline-none"
 		>
 			{submitText}
 		</button>
@@ -52,22 +52,32 @@
 		display: block;
 		font-weight: 500;
 		margin-bottom: 0.5rem;
-		color: #374151;
+		color: rgb(191 219 254); /* text-blue-200 */
 	}
 	.neat-form :global(input),
 	.neat-form :global(select),
 	.neat-form :global(textarea) {
 		width: 100%;
 		padding: 0.75rem;
-		border: 1px solid #d1d5db;
+		border: 1px solid rgba(255, 255, 255, 0.2);
 		border-radius: 0.5rem;
 		font-size: 1rem;
+		background: rgba(255, 255, 255, 0.1);
+		color: white;
+	}
+	.neat-form :global(input::placeholder),
+	.neat-form :global(textarea::placeholder) {
+		color: rgba(191, 219, 254, 0.6);
 	}
 	.neat-form :global(input:focus),
 	.neat-form :global(select:focus),
 	.neat-form :global(textarea:focus) {
 		outline: none;
-		border-color: #3b82f6;
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+		border-color: rgba(255, 255, 255, 0.5);
+		box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+	}
+	.neat-form :global(select option) {
+		background: #1e3a5f;
+		color: white;
 	}
 </style>

@@ -62,26 +62,28 @@
 	<title>Neat{data.form ? ` — ${data.form.title}` : ''}</title>
 </svelte:head>
 
-<main class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+<main
+	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-4"
+>
 	{#if data.form}
-		<div class="w-full max-w-2xl rounded-xl bg-white p-8 shadow-lg">
+		<div class="w-full max-w-2xl rounded-xl bg-white/10 p-8 shadow-2xl backdrop-blur-sm">
 			<!-- Header -->
 			<div class="mb-6">
 				{#if data.form.context}
-					<span class="mb-2 inline-block rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700">
+					<span class="mb-2 inline-block rounded-full bg-white/20 px-3 py-1 text-sm text-blue-200">
 						{data.form.context}
 					</span>
 				{/if}
-				<h1 class="text-2xl font-bold text-gray-900">{data.form.title}</h1>
+				<h1 class="text-2xl font-bold text-white">{data.form.title}</h1>
 				{#if data.form.summary}
-					<p class="mt-2 text-gray-600">{data.form.summary}</p>
+					<p class="mt-2 text-blue-100">{data.form.summary}</p>
 				{/if}
 			</div>
 
 			<!-- References -->
 			{#if data.form.references && data.form.references.length > 0}
-				<div class="mb-6 rounded-lg bg-gray-50 p-4">
-					<h3 class="mb-2 text-sm font-medium text-gray-500">References</h3>
+				<div class="mb-6 rounded-lg bg-white/10 p-4">
+					<h3 class="mb-2 text-sm font-medium text-blue-200">References</h3>
 					<ul class="space-y-1">
 						{#each data.form.references as ref, i (i)}
 							<li>
@@ -89,7 +91,7 @@
 									href={ref.url}
 									target="_blank"
 									rel="noopener noreferrer"
-									class="text-blue-600 hover:underline"
+									class="text-blue-300 hover:text-white hover:underline"
 								>
 									{ref.label}
 								</a>
@@ -101,7 +103,7 @@
 
 			<!-- Error -->
 			{#if error}
-				<div class="mb-4 rounded-lg bg-red-50 p-4 text-red-700">
+				<div class="mb-4 rounded-lg bg-red-500/20 p-4 text-red-200">
 					{error}
 				</div>
 			{/if}
@@ -119,14 +121,14 @@
 				<button
 					onclick={handleSkip}
 					disabled={submitting}
-					class="text-sm text-gray-500 hover:text-gray-700"
+					class="text-sm text-blue-300 hover:text-white"
 				>
 					Skip for now
 				</button>
 			</div>
 
 			<!-- Card link -->
-			<div class="mt-6 border-t pt-4 text-center text-sm text-gray-400">
+			<div class="mt-6 border-t border-white/20 pt-4 text-center text-sm text-blue-300">
 				Fizzy card #{data.form.fizzyCardNumber}
 			</div>
 		</div>
@@ -134,8 +136,8 @@
 		<!-- No pending forms -->
 		<div class="text-center">
 			<div class="text-6xl">🎉</div>
-			<h1 class="mt-4 text-2xl font-bold text-gray-900">All done!</h1>
-			<p class="mt-2 text-gray-600">No pending decisions. Check back later.</p>
+			<h1 class="mt-4 text-2xl font-bold text-white">All done!</h1>
+			<p class="mt-2 text-blue-200">No pending decisions. Check back later.</p>
 		</div>
 	{/if}
 </main>

@@ -201,6 +201,7 @@ POST   /api/queue/:id/skip     # Skip for now
 ## Roadmap
 
 ### v0.1 — Core Infrastructure ✅
+
 - [x] SvelteKit project with Tailwind, TypeScript
 - [x] Full CI pipeline (lint, typecheck, test, build, Docker)
 - [x] SQLite database with Drizzle ORM
@@ -208,9 +209,10 @@ POST   /api/queue/:id/skip     # Skip for now
 - [x] JSON Schema form renderer (`@sjsf/form`)
 - [x] Queue endpoint with submit flow
 - [x] Fizzy integration (comments on submit)
-- [ ] **Deploy to K3s** ← *in progress*
+- [ ] **Deploy to K3s** ← _in progress_
 
 ### v0.2 — Full Form Experience
+
 - [ ] File upload support with drag-and-drop
 - [ ] References display (links, docs, videos)
 - [ ] Markdown summary rendering
@@ -218,6 +220,7 @@ POST   /api/queue/:id/skip     # Skip for now
 - [ ] UI Schema support for custom styling
 
 ### v0.3 — Smart Prioritization
+
 - [ ] Context/category tagging on forms
 - [ ] Clustering algorithm (same context = consecutive)
 - [ ] Priority weighting
@@ -225,12 +228,14 @@ POST   /api/queue/:id/skip     # Skip for now
 - [ ] Progress indicator ("3 more in this context")
 
 ### v0.4 — Polish
+
 - [ ] Mobile responsive design
 - [ ] Keyboard shortcuts (1/2/3 for choices, Enter to submit)
 - [ ] Sound/haptic feedback on completion
 - [ ] Dark/light mode toggle
 
 ### v1.0 — Open Source Release
+
 - [ ] Comprehensive documentation
 - [ ] Docker image on GHCR
 - [ ] Helm chart for K8s

@@ -139,9 +139,7 @@ const testForms = {
 				'ui:components': { textWidget: 'textareaWidget' }
 			}
 		},
-		references: [
-			{ label: 'Documentation', url: 'https://example.com', type: 'doc' as const }
-		]
+		references: [{ label: 'Documentation', url: 'https://example.com', type: 'doc' as const }]
 	}
 };
 

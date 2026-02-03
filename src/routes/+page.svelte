@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
+	import { marked } from 'marked';
 	import NeatForm from '$lib/components/NeatForm.svelte';
 	import type { PageData } from './$types';
+
+	// Configure marked for inline rendering (no <p> wrapper for simple text)
+	marked.setOptions({
+		breaks: true, // Convert \n to <br>
+		gfm: true // GitHub Flavored Markdown
+	});
 
 	let { data }: { data: PageData } = $props();
 
@@ -148,7 +155,9 @@
 						{/if}
 						<h1 class="text-4xl font-bold text-white">{currentForm.title}</h1>
 						{#if currentForm.summary}
-							<p class="mt-3 text-xl text-blue-100">{currentForm.summary}</p>
+							<div class="prose prose-invert prose-lg mt-3 max-w-none text-blue-100">
+								{@html marked(currentForm.summary)}
+							</div>
 						{/if}
 					</div>
 

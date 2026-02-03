@@ -1,5 +1,12 @@
 <script lang="ts">
+	import { marked } from 'marked';
 	import type { PageData } from './$types';
+
+	// Configure marked
+	marked.setOptions({
+		breaks: true,
+		gfm: true
+	});
 
 	let { data }: { data: PageData } = $props();
 	let error = $state<string | null>(null);
@@ -47,9 +54,25 @@
 		}
 	}
 
+	// Convert markdown to plain text for truncation
+	function markdownToPlainText(md: string): string {
+		// Convert markdown bold/italic to plain text
+		return md
+			.replace(/\*\*([^*]+)\*\*/g, '$1') // **bold**
+			.replace(/\*([^*]+)\*/g, '$1') // *italic*
+			.replace(/_{2}([^_]+)_{2}/g, '$1') // __bold__
+			.replace(/_([^_]+)_/g, '$1') // _italic_
+			.replace(/`([^`]+)`/g, '$1') // `code`
+			.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [link](url)
+			.replace(/#+\s*/g, '') // # headings
+			.replace(/\n/g, ' ') // newlines to spaces
+			.trim();
+	}
+
 	function truncate(text: string | null, maxLength: number): string {
 		if (!text) return '';
-		return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+		const plain = markdownToPlainText(text);
+		return plain.length > maxLength ? plain.slice(0, maxLength) + '...' : plain;
 	}
 </script>
 
@@ -72,18 +95,18 @@
 			</div>
 		{/if}
 
-		<!-- Filters -->
+		<!-- Filters - larger touch targets on mobile -->
 		<div class="mb-6 flex flex-wrap gap-2">
 			<a
 				href="/tasks"
-				class="rounded-full px-4 py-2 text-sm font-medium transition-colors
+				class="rounded-full px-4 py-2.5 text-sm font-medium transition-colors md:px-4 md:py-2
 					{!data.currentFilter ? 'bg-white text-blue-900' : 'bg-white/10 text-white hover:bg-white/20'}"
 			>
 				All ({data.counts.pending + data.counts.skipped + data.counts.completed})
 			</a>
 			<a
 				href="/tasks?status=pending"
-				class="rounded-full px-4 py-2 text-sm font-medium transition-colors
+				class="rounded-full px-4 py-2.5 text-sm font-medium transition-colors md:px-4 md:py-2
 					{data.currentFilter === 'pending'
 					? 'bg-blue-500 text-white'
 					: 'bg-white/10 text-white hover:bg-white/20'}"
@@ -92,7 +115,7 @@
 			</a>
 			<a
 				href="/tasks?status=skipped"
-				class="rounded-full px-4 py-2 text-sm font-medium transition-colors
+				class="rounded-full px-4 py-2.5 text-sm font-medium transition-colors md:px-4 md:py-2
 					{data.currentFilter === 'skipped'
 					? 'bg-yellow-500 text-white'
 					: 'bg-white/10 text-white hover:bg-white/20'}"
@@ -101,7 +124,7 @@
 			</a>
 			<a
 				href="/tasks?status=completed"
-				class="rounded-full px-4 py-2 text-sm font-medium transition-colors
+				class="rounded-full px-4 py-2.5 text-sm font-medium transition-colors md:px-4 md:py-2
 					{data.currentFilter === 'completed'
 					? 'bg-green-500 text-white'
 					: 'bg-white/10 text-white hover:bg-white/20'}"
@@ -150,14 +173,14 @@
 							{#if form.status === 'pending'}
 								<button
 									onclick={() => toggleSkip(form.id, form.status)}
-									class="cursor-pointer rounded-lg bg-white/10 px-3 py-2 text-sm text-white/70 hover:bg-white/20 hover:text-white"
+									class="cursor-pointer rounded-lg bg-white/10 px-4 py-2.5 text-sm text-white/70 hover:bg-white/20 hover:text-white active:scale-95 transition-transform"
 								>
 									Skip
 								</button>
 							{:else if form.status === 'skipped'}
 								<button
 									onclick={() => toggleSkip(form.id, form.status)}
-									class="cursor-pointer rounded-lg bg-yellow-500/20 px-3 py-2 text-sm text-yellow-200 hover:bg-yellow-500/30"
+									class="cursor-pointer rounded-lg bg-yellow-500/20 px-4 py-2.5 text-sm text-yellow-200 hover:bg-yellow-500/30 active:scale-95 transition-transform"
 								>
 									Unskip
 								</button>

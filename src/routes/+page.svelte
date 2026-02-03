@@ -135,10 +135,13 @@
 </svelte:head>
 
 <main
-	class="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-4"
+	class="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-4 pt-16 md:pt-4"
 >
-	<!-- All Tasks link - always visible, top-right of page -->
-	<a href="/tasks" class="fixed top-6 right-6 text-lg text-white/50 hover:text-white/80">
+	<!-- All Tasks link - fixed on larger screens, absolute on mobile -->
+	<a
+		href="/tasks"
+		class="absolute top-4 right-4 rounded-lg bg-white/10 px-3 py-2 text-sm text-white/70 hover:bg-white/20 hover:text-white md:fixed md:top-6 md:right-6 md:bg-transparent md:px-0 md:py-0 md:text-lg md:text-white/50"
+	>
 		All Tasks
 	</a>
 
@@ -229,24 +232,24 @@
 						submitText={submitting ? 'Submitting...' : 'Submit'}
 					/>
 
-					<!-- Skip button -->
+					<!-- Skip button - larger touch target on mobile -->
 					<div class="mt-4 text-center">
 						<button
 							onclick={handleSkip}
 							disabled={submitting}
-							class="cursor-pointer text-sm text-blue-300 hover:text-white"
+							class="cursor-pointer rounded-lg px-4 py-2 text-sm text-blue-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all"
 						>
 							Skip for now
 						</button>
 					</div>
 
-					<!-- Card link -->
-					<div class="mt-6 border-t border-white/20 pt-4 text-center text-sm">
+					<!-- Card link - larger touch target -->
+					<div class="mt-6 border-t border-white/20 pt-4 text-center">
 						<a
 							href="https://fizzy.home.ndbroadbent.com/1/cards/{currentForm.fizzyCardNumber}"
 							target="_blank"
 							rel="noopener noreferrer"
-							class="text-blue-300 hover:text-white hover:underline"
+							class="inline-block rounded-lg px-3 py-2 text-sm text-blue-300 hover:bg-white/10 hover:text-white hover:underline"
 						>
 							Fizzy card #{currentForm.fizzyCardNumber}
 						</a>

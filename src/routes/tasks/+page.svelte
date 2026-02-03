@@ -143,7 +143,11 @@
 				{#each data.forms as form (form.id)}
 					{@const badge = getStatusBadge(form.status)}
 					<div
-						class="flex items-center justify-between rounded-xl bg-white/10 p-4 backdrop-blur-sm"
+						role="button"
+						tabindex="0"
+						onclick={() => (window.location.href = `/tasks/${form.id}`)}
+						onkeydown={(e) => e.key === 'Enter' && (window.location.href = `/tasks/${form.id}`)}
+						class="flex cursor-pointer items-center justify-between rounded-xl bg-white/10 p-4 backdrop-blur-sm transition-colors hover:bg-white/15"
 					>
 						<div class="min-w-0 flex-1">
 							<div class="flex items-center gap-3">
@@ -155,6 +159,7 @@
 									target="_blank"
 									rel="noopener noreferrer"
 									class="text-xs text-white/40 hover:text-white/60"
+									onclick={(e) => e.stopPropagation()}
 								>
 									#{form.fizzyCardNumber}
 								</a>
@@ -169,7 +174,7 @@
 							{/if}
 						</div>
 
-						<div class="ml-4 flex-shrink-0">
+						<div class="ml-4 flex-shrink-0" onclick={(e) => e.stopPropagation()}>
 							{#if form.status === 'pending'}
 								<button
 									onclick={() => toggleSkip(form.id, form.status)}

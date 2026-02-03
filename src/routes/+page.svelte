@@ -237,7 +237,7 @@
 						<button
 							onclick={handleSkip}
 							disabled={submitting}
-							class="cursor-pointer rounded-lg px-4 py-2 text-sm text-blue-300 hover:bg-white/10 hover:text-white active:scale-95 transition-all"
+							class="cursor-pointer rounded-lg px-4 py-2 text-sm text-blue-300 transition-all hover:bg-white/10 hover:text-white active:scale-95"
 						>
 							Skip for now
 						</button>

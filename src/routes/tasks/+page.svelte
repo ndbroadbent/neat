@@ -173,14 +173,14 @@
 							{#if form.status === 'pending'}
 								<button
 									onclick={() => toggleSkip(form.id, form.status)}
-									class="cursor-pointer rounded-lg bg-white/10 px-4 py-2.5 text-sm text-white/70 hover:bg-white/20 hover:text-white active:scale-95 transition-transform"
+									class="cursor-pointer rounded-lg bg-white/10 px-4 py-2.5 text-sm text-white/70 transition-transform hover:bg-white/20 hover:text-white active:scale-95"
 								>
 									Skip
 								</button>
 							{:else if form.status === 'skipped'}
 								<button
 									onclick={() => toggleSkip(form.id, form.status)}
-									class="cursor-pointer rounded-lg bg-yellow-500/20 px-4 py-2.5 text-sm text-yellow-200 hover:bg-yellow-500/30 active:scale-95 transition-transform"
+									class="cursor-pointer rounded-lg bg-yellow-500/20 px-4 py-2.5 text-sm text-yellow-200 transition-transform hover:bg-yellow-500/30 active:scale-95"
 								>
 									Unskip
 								</button>

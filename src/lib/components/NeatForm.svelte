@@ -217,8 +217,8 @@
 </div>
 
 <style>
-	/* Global text color for all form elements */
-	.neat-form :global(*) {
+	/* Global text color for all form elements (except submit button) */
+	.neat-form :global(*:not(.neat-submit)) {
 		color: white;
 	}
 	.neat-form :global(.sjsf-field) {

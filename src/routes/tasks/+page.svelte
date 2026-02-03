@@ -56,16 +56,16 @@
 
 	// Convert markdown to plain text for truncation
 	function markdownToPlainText(md: string): string {
-		// Convert markdown bold/italic to plain text
-		return md
-			.replace(/\*\*([^*]+)\*\*/g, '$1') // **bold**
-			.replace(/\*([^*]+)\*/g, '$1') // *italic*
-			.replace(/_{2}([^_]+)_{2}/g, '$1') // __bold__
-			.replace(/_([^_]+)_/g, '$1') // _italic_
-			.replace(/`([^`]+)`/g, '$1') // `code`
-			.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [link](url)
-			.replace(/#+\s*/g, '') // # headings
-			.replace(/\n/g, ' ') // newlines to spaces
+		// Convert markdown to HTML with marked, then strip HTML tags
+		const html = marked.parse(md, { async: false }) as string;
+		return html
+			.replace(/<[^>]+>/g, '') // strip HTML tags
+			.replace(/&nbsp;/g, ' ') // common HTML entity
+			.replace(/&amp;/g, '&')
+			.replace(/&lt;/g, '<')
+			.replace(/&gt;/g, '>')
+			.replace(/&quot;/g, '"')
+			.replace(/\n+/g, ' ') // newlines to spaces
 			.trim();
 	}
 

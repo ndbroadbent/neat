@@ -1,0 +1,78 @@
+# Woodpecker CI Pipeline for Neat
+# Converted from GitHub Actions
+
+when:
+  - event: [push, pull_request]
+    branch: main
+
+steps:
+  # Install dependencies (shared cache)
+  install:
+    image: oven/bun:latest
+    commands:
+      - bun install --frozen-lockfile
+
+  # Run linting and type checks in parallel
+  lint:
+    image: oven/bun:latest
+    commands:
+      - bun run format:check
+      - bun run lint
+      - bun run typecheck
+    depends_on: [install]
+
+  # File length check
+  file-length:
+    image: oven/bun:latest
+    commands:
+      - chmod +x bin/check-file-length.sh
+      - ./bin/check-file-length.sh
+    depends_on: [install]
+
+  # Run tests with coverage
+  test:
+    image: oven/bun:latest
+    commands:
+      - mkdir -p data
+      - bun run db:migrate
+      - bun run test:coverage
+    depends_on: [install]
+
+  # Build
+  build:
+    image: oven/bun:latest
+    commands:
+      - bun run build
+    depends_on: [lint, test, file-length]
+
+  # E2E tests (main branch only)
+  e2e:
+    image: mcr.microsoft.com/playwright:v1.40.0-focal
+    commands:
+      - npm install -g bun
+      - bun install --frozen-lockfile
+      - mkdir -p data
+      - bun run db:migrate
+      - bun run test:e2e
+    depends_on: [build]
+    when:
+      - event: push
+        branch: main
+
+  # Build and push Docker image (main branch only)
+  docker:
+    image: plugins/docker
+    settings:
+      registry: ghcr.io
+      repo: ghcr.io/ndbroadbent/neat
+      tags:
+        - latest
+        - ${CI_COMMIT_SHA:0:7}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    depends_on: [build]
+    when:
+      - event: push
+        branch: main

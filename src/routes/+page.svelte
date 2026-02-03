@@ -186,7 +186,7 @@
 						{/if}
 						<h1 class="text-2xl font-bold text-white md:text-4xl">{currentForm.title}</h1>
 						{#if currentForm.summary}
-							<div class="prose prose-invert mt-3 max-w-none text-blue-100 md:prose-lg">
+							<div class="prose prose-invert md:prose-lg mt-3 max-w-none text-blue-100">
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -- Content is from our DB, not user input -->
 								{@html marked(currentForm.summary)}
 							</div>

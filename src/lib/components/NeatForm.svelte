@@ -217,6 +217,10 @@
 </div>
 
 <style>
+	/* Global text color for all form elements */
+	.neat-form :global(*) {
+		color: white;
+	}
 	.neat-form :global(.sjsf-field) {
 		margin-bottom: 1.5rem;
 	}
@@ -226,6 +230,13 @@
 		font-size: 1.125rem;
 		margin-bottom: 0.75rem;
 		color: rgb(191 219 254); /* text-blue-200 */
+	}
+	/* Form field descriptions/questions */
+	.neat-form :global(.sjsf-description),
+	.neat-form :global(p),
+	.neat-form :global(span),
+	.neat-form :global(div) {
+		color: white;
 	}
 	.neat-form :global(input[type='text']),
 	.neat-form :global(input[type='email']),

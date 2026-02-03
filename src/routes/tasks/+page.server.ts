@@ -1,12 +1,14 @@
 import { db, forms } from '$lib/server/db';
-import { desc } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const statusFilter = url.searchParams.get('status');
+	const includeTest = url.searchParams.get('includeTest') === 'true';
 
 	// Get all forms, ordered by priority then creation date
-	const allForms = await db
+	// Test forms excluded by default (for Nathan's UI)
+	const baseQuery = db
 		.select({
 			id: forms.id,
 			title: forms.title,
@@ -17,8 +19,13 @@ export const load: PageServerLoad = async ({ url }) => {
 			createdAt: forms.createdAt,
 			updatedAt: forms.updatedAt
 		})
-		.from(forms)
-		.orderBy(desc(forms.priority), desc(forms.createdAt));
+		.from(forms);
+
+	const allForms = includeTest
+		? await baseQuery.orderBy(desc(forms.priority), desc(forms.createdAt))
+		: await baseQuery
+				.where(eq(forms.isTest, false))
+				.orderBy(desc(forms.priority), desc(forms.createdAt));
 
 	// Count by status for filter badges (always from all forms)
 	const counts = {

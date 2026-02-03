@@ -40,7 +40,10 @@ export const forms = sqliteTable('forms', {
 
 	// Context for prioritization
 	context: text('context'), // e.g., "infrastructure", "matchcraft"
-	priority: integer('priority').default(0) // Higher = more urgent
+	priority: integer('priority').default(0), // Higher = more urgent
+
+	// Test/QA support - test forms hidden from normal views
+	isTest: integer('is_test', { mode: 'boolean' }).default(false).notNull()
 });
 
 // Type definitions

@@ -274,3 +274,11 @@
 		</div>
 	{/if}
 </main>
+
+<style>
+	/* Fix prose list markers - override Tailwind prose counters variable */
+	:global(.prose-invert) {
+		--tw-prose-counters: rgba(255, 255, 255, 0.6) !important;
+		--tw-prose-bullets: rgba(255, 255, 255, 0.6) !important;
+	}
+</style>

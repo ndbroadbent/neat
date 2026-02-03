@@ -33,6 +33,33 @@
 		currentIndex = currentIndex === totalForms - 1 ? 0 : currentIndex + 1;
 	}
 
+	// Touch/swipe handling for mobile
+	let touchStartX = $state(0);
+	let touchEndX = $state(0);
+	const SWIPE_THRESHOLD = 50; // Minimum swipe distance in pixels
+
+	function handleTouchStart(e: TouchEvent) {
+		touchStartX = e.changedTouches[0].screenX;
+	}
+
+	function handleTouchEnd(e: TouchEvent) {
+		touchEndX = e.changedTouches[0].screenX;
+		handleSwipe();
+	}
+
+	function handleSwipe() {
+		const swipeDistance = touchEndX - touchStartX;
+		if (Math.abs(swipeDistance) < SWIPE_THRESHOLD) return;
+
+		if (swipeDistance > 0) {
+			// Swiped right -> go to previous
+			navigateLeft();
+		} else {
+			// Swiped left -> go to next
+			navigateRight();
+		}
+	}
+
 	// Parse error response from API - handles various formats
 	async function parseErrorResponse(res: Response): Promise<string> {
 		try {
@@ -118,23 +145,27 @@
 	{#if currentForm}
 		<!-- Navigation container -->
 		<div class="flex w-full max-w-4xl items-center justify-center gap-4">
-			<!-- Left navigation arrow -->
+			<!-- Left navigation arrow (desktop only) -->
 			{#if totalForms > 1}
 				<button
 					onclick={navigateLeft}
-					class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/10 text-2xl text-white/50 transition-all hover:bg-white/20 hover:text-white"
+					class="hidden h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/10 text-2xl text-white/50 transition-all hover:bg-white/20 hover:text-white md:flex"
 					aria-label="Previous task"
 				>
 					←
 				</button>
 			{/if}
 
-			<!-- Form card with animation -->
+			<!-- Form card with animation (swipe on mobile) -->
 			{#key currentForm.id}
 				<div
-					class="w-full max-w-3xl rounded-2xl bg-white/10 p-10 shadow-2xl backdrop-blur-sm"
+					class="w-full max-w-3xl rounded-2xl bg-white/10 p-6 shadow-2xl backdrop-blur-sm md:p-10"
 					in:fly={{ x: direction === 'right' ? 100 : -100, duration: 200, opacity: 0 }}
 					out:fly={{ x: direction === 'right' ? -100 : 100, duration: 200, opacity: 0 }}
+					ontouchstart={handleTouchStart}
+					ontouchend={handleTouchEnd}
+					role="region"
+					aria-label="Task card - swipe left or right to navigate"
 				>
 					<!-- Header -->
 					<div class="mb-6">
@@ -223,11 +254,11 @@
 				</div>
 			{/key}
 
-			<!-- Right navigation arrow -->
+			<!-- Right navigation arrow (desktop only) -->
 			{#if totalForms > 1}
 				<button
 					onclick={navigateRight}
-					class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/10 text-2xl text-white/50 transition-all hover:bg-white/20 hover:text-white"
+					class="hidden h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full bg-white/10 text-2xl text-white/50 transition-all hover:bg-white/20 hover:text-white md:flex"
 					aria-label="Next task"
 				>
 					→

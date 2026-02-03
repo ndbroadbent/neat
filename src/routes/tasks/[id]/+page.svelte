@@ -165,7 +165,11 @@
 		{#if data.form.status === 'completed' && data.form.response}
 			<div class="mb-8 rounded-lg bg-green-500/10 p-5">
 				<h3 class="mb-3 text-base font-medium text-green-200">Response</h3>
-				<pre class="overflow-x-auto text-sm text-green-100">{JSON.stringify(data.form.response, null, 2)}</pre>
+				<pre class="overflow-x-auto text-sm text-green-100">{JSON.stringify(
+						data.form.response,
+						null,
+						2
+					)}</pre>
 			</div>
 		{/if}
 

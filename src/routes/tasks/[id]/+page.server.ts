@@ -26,7 +26,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		.orderBy(desc(forms.priority), asc(forms.createdAt));
 
 	// Find position in queue if this is a pending form
-	const queuePosition = form.status === 'pending' ? pendingForms.findIndex((f) => f.id === form.id) + 1 : null;
+	const queuePosition =
+		form.status === 'pending' ? pendingForms.findIndex((f) => f.id === form.id) + 1 : null;
 
 	return {
 		form,

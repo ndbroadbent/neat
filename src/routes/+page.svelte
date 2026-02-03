@@ -153,9 +153,9 @@
 								{currentForm.context}
 							</span>
 						{/if}
-						<h1 class="text-4xl font-bold text-white">{currentForm.title}</h1>
+						<h1 class="text-2xl font-bold text-white md:text-4xl">{currentForm.title}</h1>
 						{#if currentForm.summary}
-							<div class="prose prose-invert prose-lg mt-3 max-w-none text-blue-100">
+							<div class="prose prose-invert mt-3 max-w-none text-blue-100 md:prose-lg">
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -- Content is from our DB, not user input -->
 								{@html marked(currentForm.summary)}
 							</div>
@@ -238,8 +238,8 @@
 		<!-- No pending forms -->
 		<div class="text-center">
 			<div class="text-8xl">🎉</div>
-			<h1 class="mt-6 text-4xl font-bold text-white">All done!</h1>
-			<p class="mt-3 text-xl text-blue-200">No pending decisions. Check back later.</p>
+			<h1 class="mt-6 text-2xl font-bold text-white md:text-4xl">All done!</h1>
+			<p class="mt-3 text-lg text-blue-200 md:text-xl">No pending decisions. Check back later.</p>
 		</div>
 	{/if}
 </main>

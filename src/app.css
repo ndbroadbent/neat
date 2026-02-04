@@ -3,7 +3,7 @@
 
 @theme {
 	--font-inter: 'Inter', sans-serif;
-	
+
 	/* Override prose theme colors for cool blue theme */
 	--color-prose-body: theme(colors.blue.100);
 	--color-prose-headings: theme(colors.white);
@@ -23,7 +23,7 @@
 	--color-prose-pre-bg: rgba(0, 0, 0, 0.3);
 	--color-prose-th-borders: theme(colors.blue.600);
 	--color-prose-td-borders: theme(colors.blue.700);
-	
+
 	/* Invert variants */
 	--color-prose-invert-body: theme(colors.blue.100);
 	--color-prose-invert-headings: theme(colors.white);

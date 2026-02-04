@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { db, forms } from '$lib/server/db';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { addComment, closeCard, moveCard } from '$lib/server/fizzy';
 import type { RequestHandler } from './$types';
 
@@ -63,6 +63,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 	}
 
 	// Update form in database - mark as completed with comment response
+	// Use atomic check-and-update to prevent race conditions
 	const [updated] = await db
 		.update(forms)
 		.set({
@@ -71,8 +72,13 @@ export const POST: RequestHandler = async ({ params, request }) => {
 			completedAt: new Date(),
 			updatedAt: new Date()
 		})
-		.where(eq(forms.id, params.id))
+		.where(and(eq(forms.id, params.id), eq(forms.status, 'pending')))
 		.returning();
+
+	// If no row was updated, another request completed it first
+	if (!updated) {
+		throw error(409, 'Form was already processed by another request');
+	}
 
 	return json({ success: true, form: updated });
 };

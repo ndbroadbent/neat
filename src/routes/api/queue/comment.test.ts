@@ -187,4 +187,48 @@ describe('POST /api/queue/:id/comment', () => {
 
 		await expect(POST(event)).rejects.toThrow();
 	});
+
+	it('should complete form even when Fizzy addComment fails', async () => {
+		vi.mocked(addComment).mockResolvedValueOnce({
+			success: false,
+			error: { code: 'API_ERROR', message: 'API down' }
+		});
+
+		const event = createMockEvent({
+			params: { id: testForm.id },
+			body: { comment: 'Test despite Fizzy failure' }
+		});
+
+		const response = await POST(event);
+		const data = await response.json();
+
+		expect(data.success).toBe(true);
+		expect(data.form.status).toBe('completed');
+	});
+
+	it('should handle race condition with 409 error', async () => {
+		// Simulate race: complete the form between select and update
+		const event = createMockEvent({
+			params: { id: testForm.id },
+			body: { comment: 'First request' }
+		});
+
+		// First request succeeds
+		await POST(event);
+
+		// Reset form to pending for fresh test form
+		await db.delete(forms).where(eq(forms.id, testForm.id));
+		testForm = await createTestForm();
+
+		// Complete the form externally (simulating race)
+		await db.update(forms).set({ status: 'completed' }).where(eq(forms.id, testForm.id));
+
+		// Second request should fail with 409 or 400
+		const event2 = createMockEvent({
+			params: { id: testForm.id },
+			body: { comment: 'Second request' }
+		});
+
+		await expect(POST(event2)).rejects.toThrow();
+	});
 });

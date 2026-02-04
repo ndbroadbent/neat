@@ -294,6 +294,7 @@
 									bind:value={commentText}
 									placeholder="Type your response here..."
 									rows="3"
+									maxlength="10000"
 									class="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/40 focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
 								></textarea>
 								<div class="flex justify-end">

@@ -16,6 +16,8 @@
 	let submitting = $state(false);
 	let error = $state<string | null>(null);
 	let direction = $state<'left' | 'right'>('right');
+	let showCommentInput = $state(false);
+	let commentText = $state('');
 
 	// Current form based on index
 	let currentForm = $derived(data.forms?.[currentIndex] ?? null);
@@ -126,6 +128,39 @@
 			error = e instanceof Error ? e.message : 'An unexpected error occurred';
 		} finally {
 			submitting = false;
+		}
+	}
+
+	async function handleCommentSubmit() {
+		if (!currentForm || !commentText.trim()) return;
+
+		submitting = true;
+		error = null;
+
+		try {
+			const res = await fetch(`/api/queue/${currentForm.id}/comment`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ comment: commentText.trim() })
+			});
+
+			if (!res.ok) {
+				const errorMessage = await parseErrorResponse(res);
+				throw new Error(errorMessage);
+			}
+
+			window.location.reload();
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'An unexpected error occurred';
+		} finally {
+			submitting = false;
+		}
+	}
+
+	function toggleCommentInput() {
+		showCommentInput = !showCommentInput;
+		if (!showCommentInput) {
+			commentText = '';
 		}
 	}
 </script>
@@ -243,8 +278,40 @@
 						</button>
 					</div>
 
+					<!-- Quick comment response section -->
+					<div class="mt-4 border-t border-white/10 pt-4">
+						<button
+							onclick={toggleCommentInput}
+							class="mx-auto flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm text-blue-300 transition-all hover:bg-white/10 hover:text-white"
+						>
+							<span class="text-lg">{showCommentInput ? '−' : '+'}</span>
+							<span>Respond with comment</span>
+						</button>
+
+						{#if showCommentInput}
+							<div class="mt-4 space-y-3" in:fly={{ y: -10, duration: 150 }}>
+								<textarea
+									bind:value={commentText}
+									placeholder="Type your response here..."
+									rows="3"
+									maxlength="10000"
+									class="w-full rounded-lg border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-white/40 focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+								></textarea>
+								<div class="flex justify-end">
+									<button
+										onclick={handleCommentSubmit}
+										disabled={submitting || !commentText.trim()}
+										class="cursor-pointer rounded-lg bg-blue-600 px-6 py-2 text-sm font-medium text-white transition-all hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+									>
+										{submitting ? 'Submitting...' : 'Submit Comment'}
+									</button>
+								</div>
+							</div>
+						{/if}
+					</div>
+
 					<!-- Card link - larger touch target -->
-					<div class="mt-6 border-t border-white/20 pt-4 text-center">
+					<div class="mt-4 border-t border-white/20 pt-4 text-center">
 						<a
 							href="https://fizzy.home.ndbroadbent.com/1/cards/{currentForm.fizzyCardNumber}"
 							target="_blank"
